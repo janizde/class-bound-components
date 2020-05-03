@@ -11,12 +11,11 @@ type VariantProps<V extends Variants = {}> = {
 
 type OuterProps<T, V extends Variants = {}> = T & VariantProps<V>;
 
-export default function createClassedComponent<V extends Variants>(
-  className: ClassValue,
-  displayName?: string,
-  variants?: V
-) {
-  type Props = OuterProps<React.HTMLAttributes<HTMLDivElement>, V>;
+export default function createClassedComponent<
+  V extends Variants,
+  E extends React.ElementType<any> = 'div'
+>(className: ClassValue, displayName?: string, variants?: V, ElementType?: E) {
+  type Props = OuterProps<React.ComponentProps<E>, V>;
 
   const ComposedComponent: React.FC<Props> = (() => {
     return (props: Props) => {
@@ -31,8 +30,11 @@ export default function createClassedComponent<V extends Variants>(
       );
 
       const componentClassName = classNames(className, variantClassNames);
+      const ElementTypeSafe = ElementType || 'div';
 
-      return <div className={componentClassName} {...componentProps} />;
+      return (
+        <ElementTypeSafe className={componentClassName} {...componentProps} />
+      );
     };
   })();
 

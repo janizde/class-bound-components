@@ -28,6 +28,17 @@ describe('classed-components', () => {
       expect(FooComponent.displayName, 'to be', 'FooComponent');
     });
 
+    it('should pass down non-variant props', () => {
+      const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+      expect(
+        <FooComponent tabIndex={-1}>foobar</FooComponent>,
+        'to exactly render as',
+        <div className="fooClass" tabIndex={-1}>
+          foobar
+        </div>
+      );
+    });
+
     describe('variants', () => {
       it('should add the className of a variant when the flag is set', () => {
         const FooComponent = createClassedComponent(
@@ -70,6 +81,77 @@ describe('classed-components', () => {
           <FooComponent />,
           'to exactly render as',
           <div className="fooClass" />
+        );
+      });
+    });
+
+    describe('elementType', () => {
+      it('should render a <span /> when the elementType is set to it', () => {
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          {},
+          'span'
+        );
+
+        expect(
+          <FooComponent>foobar</FooComponent>,
+          'to exactly render as',
+          <span className="fooClass">foobar</span>
+        );
+      });
+
+      it('should pass down element specific props', () => {
+        const FooLink = createClassedComponent(
+          'fooLinkClass',
+          'FooLink',
+          {},
+          'a'
+        );
+        expect(
+          <FooLink href="https://example.com/">Click here</FooLink>,
+          'to exactly render as',
+          <a className="fooLinkClass" href="https://example.com/">
+            Click here
+          </a>
+        );
+      });
+
+      it('should render a custom component', () => {
+        const Inner: React.FC<{ className?: string }> = () => (
+          <span>Inner component</span>
+        );
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          {},
+          Inner
+        );
+
+        expect(
+          <FooComponent />,
+          'to exactly render as',
+          <Inner className="fooClass" />
+        );
+      });
+
+      it('should pass down props of a custom component', () => {
+        const Inner: React.FC<{
+          className?: string;
+          color: 'green' | 'blue';
+        }> = ({ color }) => <span>{color}</span>;
+
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          {},
+          Inner
+        );
+
+        expect(
+          <FooComponent color="green" />,
+          'to exactly render as',
+          <Inner className="fooClass" color="green" />
         );
       });
     });
