@@ -33,15 +33,43 @@ describe('classed-components', () => {
         const FooComponent = createClassedComponent(
           'fooClass',
           'FooComponent',
-          {
-            bar: 'barClass',
-          }
+          { bar: 'barClass' }
         );
 
         expect(
           <FooComponent bar />,
           'to exactly render as',
           <div className="fooClass barClass" />
+        );
+      });
+
+      it('should concatenate multiple class names when an array is given for a variant', () => {
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          {
+            bar: ['barClass', 'bazClass'],
+          }
+        );
+
+        expect(
+          <FooComponent bar />,
+          'to exactly render as',
+          <div className="fooClass barClass bazClass" />
+        );
+      });
+
+      it('should not add a variant className when the prop is not set', () => {
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          { bar: 'barClass' }
+        );
+
+        expect(
+          <FooComponent />,
+          'to exactly render as',
+          <div className="fooClass" />
         );
       });
     });
