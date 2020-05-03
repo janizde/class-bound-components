@@ -155,5 +155,33 @@ describe('classed-components', () => {
         );
       });
     });
+
+    describe('withVariants', () => {
+      it('should add a variant', () => {
+        const FooComponent = createClassedComponent('fooClass').withVariants({
+          bar: 'barClass',
+        });
+
+        expect(
+          <FooComponent bar />,
+          'to exactly render as',
+          <div className="fooClass barClass" />
+        );
+      });
+
+      it('should only override variants with same name', () => {
+        const FooComponent = createClassedComponent(
+          'fooClass',
+          'FooComponent',
+          { bar: 'oldBarClass', baz: 'bazClass' }
+        ).withVariants({ bar: 'barClass' });
+
+        expect(
+          <FooComponent bar baz />,
+          'to exactly render as',
+          <div className="fooClass barClass bazClass" />
+        );
+      });
+    });
   });
 });
