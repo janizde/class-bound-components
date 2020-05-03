@@ -1,0 +1,19 @@
+{
+  "name": "classed-components",
+  "version": "0.1.0",
+  "description": "Utility to create React components bound to classNames",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/janizde/classed-components.git"
+  },
+  "author": "Jannik Portz <hello@jannikportz.de>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/janizde/classed-components/issues"
+  },
+  "homepage": "https://github.com/janizde/classed-components#readme"
+}
