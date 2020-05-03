@@ -4,7 +4,7 @@
   "description": "Utility to create React components bound to classNames",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
@@ -15,5 +15,15 @@
   "bugs": {
     "url": "https://github.com/janizde/classed-components/issues"
   },
-  "homepage": "https://github.com/janizde/classed-components#readme"
+  "homepage": "https://github.com/janizde/classed-components#readme",
+  "devDependencies": {
+    "@babel/core": "^7.9.6",
+    "@babel/preset-env": "^7.9.6",
+    "@babel/preset-typescript": "^7.9.0",
+    "@types/jest": "^25.2.1",
+    "babel-jest": "^25.5.1",
+    "jest": "^25.5.4",
+    "prettier": "^2.0.5",
+    "typescript": "^3.8.3"
+  }
 }
