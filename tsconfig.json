@@ -5,7 +5,8 @@
     "declaration": true,
     "outDir": "./dist",
     "strict": true,
-    "jsx": "react"
+    "jsx": "react",
+    "removeComments": false
   },
   "include": ["src"],
   "exclude": ["node_modules", "**/*.test.tsx", "dist"]

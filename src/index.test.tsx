@@ -1,6 +1,6 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
-import createClassedComponent from './index';
+import createClassedComponent, { CC_OPTIONS } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
 
@@ -181,6 +181,39 @@ describe('classed-components', () => {
           'to exactly render as',
           <div className="fooClass barClass bazClass" />
         );
+      });
+    });
+
+    describe('as', () => {
+      it('should return a new component with the specified elementType', () => {
+        const FooLink = createClassedComponent('fooLink', 'FooLink', {}, 'a');
+        const FooButton = FooLink.as('button');
+
+        expect(
+          <FooButton type="button">Click here</FooButton>,
+          'to exactly render as',
+          <button className="fooLink" type="button">
+            Click here
+          </button>
+        );
+      });
+    });
+
+    describe('options', () => {
+      it('should make the options accessible with the symbol', () => {
+        const FooLink = createClassedComponent(
+          'fooClass',
+          'FooLink',
+          { bar: 'barClass' },
+          'a'
+        );
+
+        expect(FooLink[CC_OPTIONS], 'to equal', {
+          className: 'fooClass',
+          displayName: 'FooLink',
+          variants: { bar: 'barClass' },
+          elementType: 'a',
+        });
       });
     });
   });

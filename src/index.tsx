@@ -4,6 +4,7 @@ import { ClassValue, ClassArray } from 'classnames/types';
 import * as React from 'react';
 
 const __ccOptions = Symbol('__ccOptions');
+export const CC_OPTIONS = __ccOptions;
 
 // Base type for variants
 type Variants = {};
@@ -27,7 +28,7 @@ type Options<
   elementType: E;
 };
 
-type ClassedComponent<
+export type ClassedComponent<
   E extends React.ElementType<any> = 'div',
   V extends Variants = {}
 > = React.FC<OuterProps<React.ComponentProps<E>, V>> & {
@@ -36,10 +37,14 @@ type ClassedComponent<
     this: ClassedComponent<E, V>,
     variants: V2
   ): ClassedComponent<E, V & V2>;
+  as<E2 extends React.ElementType<any>>(
+    this: ClassedComponent<E, V>,
+    elementType: E2
+  ): ClassedComponent<E2, V>;
 };
 
 function createClassedComponentFromOptions<
-  V extends Variants,
+  V extends Variants = {},
   E extends React.ElementType<any> = 'div'
 >(options: Options<E, V>) {
   type Props = OuterProps<React.ComponentProps<E>, V>;
@@ -73,6 +78,7 @@ function createClassedComponentFromOptions<
   ComposedComponent.displayName = options.displayName;
   ComposedComponent[__ccOptions] = options;
   ComposedComponent.withVariants = withVariants;
+  ComposedComponent.as = as;
 
   return ComposedComponent;
 }
@@ -90,17 +96,79 @@ function withVariants<
   });
 }
 
-export default function createClassedComponent<
-  V extends Variants,
-  E extends React.ElementType<any> = 'div'
->(className: ClassValue, displayName?: string, variants?: V, elementType?: E) {
-  return createClassedComponentFromOptions({
-    className,
-    displayName,
-    variants,
-    elementType: elementType || 'div',
+function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
+  this: ClassedComponent<any, V>,
+  elementType: E2
+): ClassedComponent<E2, V> {
+  const options = this[__ccOptions];
+  return createClassedComponentFromOptions<V, E2>({
+    ...options,
+    elementType,
   });
 }
+
+interface CreateClassedComponent<
+  E extends React.ElementType<any> = 'div',
+  V extends Variants = {}
+> {
+  (options: Options<E, V>): ClassedComponent<E, V>;
+  (
+    className: ClassValue,
+    displayName?: string,
+    variants?: V,
+    elementType?: E
+  ): ClassedComponent<E, V>;
+  (className: ClassValue, variants?: V, elementType?: E): ClassedComponent<
+    E,
+    V
+  >;
+}
+
+function createClassedComponent<
+  E extends React.ElementType<any> = 'div',
+  V extends Variants = {}
+>(options: Options<E, V>): ClassedComponent<E, V>;
+function createClassedComponent<
+  E extends React.ElementType<any> = 'div',
+  V extends Variants = {}
+>(
+  className: ClassValue,
+  displayName?: string,
+  variants?: V,
+  elementType?: E
+): ClassedComponent<E, V>;
+function createClassedComponent<
+  E extends React.ElementType<any> = 'div',
+  V extends Variants = {}
+>(className: ClassValue, variants: V, elementType?: E): ClassedComponent<E, V>;
+function createClassedComponent(
+  optionsOrClassName: any,
+  displayNameOrVariants?: any,
+  variantsOrElementType?: any,
+  elementType?: any
+) {
+  if (typeof optionsOrClassName === 'object') {
+    return createClassedComponentFromOptions(optionsOrClassName);
+  }
+
+  if (typeof displayNameOrVariants === 'object') {
+    return createClassedComponentFromOptions({
+      className: optionsOrClassName,
+      displayName: undefined,
+      variants: displayNameOrVariants,
+      elementType: 'div',
+    });
+  }
+
+  return createClassedComponentFromOptions({
+    className: optionsOrClassName,
+    displayName: displayNameOrVariants,
+    variants: variantsOrElementType,
+    elementType,
+  });
+}
+
+export default createClassedComponent;
 
 /**
  * Creates an array of ClassValues of those variants that are enabled in the props
