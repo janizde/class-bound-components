@@ -22,9 +22,13 @@ type Options<
   E extends React.ElementType<any> = 'div',
   V extends Variants = {}
 > = {
+  // Class that's always applied to the component
   className: ClassValue;
+  // `displayName` for the resulting component
   displayName?: string;
+  // Record mapping the name of a variant to the ClassValue applied when active
   variants?: V;
+  // Type of the element, may be a known element string (e.g., 'div') or a React component
   elementType: E;
 };
 
@@ -43,6 +47,12 @@ export type ClassedComponent<
   ): ClassedComponent<E2, V>;
 };
 
+/**
+ * Creates a `ClassedComponent` with the options object provided in `options`
+ *
+ * @param   options     Options for the ClassedComponent
+ * @returns             ClassedComponent
+ */
 function createClassedComponentFromOptions<
   V extends Variants = {},
   E extends React.ElementType<any> = 'div'
@@ -83,6 +93,15 @@ function createClassedComponentFromOptions<
   return ComposedComponent;
 }
 
+/**
+ * Creates a new ClassedComponent with the same options as this ClassedComponent
+ * except the variants being extended with `variants`. While existing variants remain,
+ * new variants override old variants if they're named similarly.
+ *
+ * @param     this
+ * @param     variants    Variants to merge into this component's variants
+ * @returns               ClassedComponent with merged variants
+ */
 function withVariants<
   E extends React.ElementType<any> = 'div',
   V extends Variants = {},
@@ -96,6 +115,14 @@ function withVariants<
   });
 }
 
+/**
+ * Creates a new ClassedComponent with the same options as this ClassedComponent
+ * except the `elementType` being set to the `elementType` from the parameters.
+ *
+ * @param     this
+ * @param     elementType   New element type of ClassedComponent
+ * @returns                 ClassedComponent with modified elementType
+ */
 function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
   this: ClassedComponent<any, V>,
   elementType: E2
@@ -105,23 +132,6 @@ function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
     ...options,
     elementType,
   });
-}
-
-interface CreateClassedComponent<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
-> {
-  (options: Options<E, V>): ClassedComponent<E, V>;
-  (
-    className: ClassValue,
-    displayName?: string,
-    variants?: V,
-    elementType?: E
-  ): ClassedComponent<E, V>;
-  (className: ClassValue, variants?: V, elementType?: E): ClassedComponent<
-    E,
-    V
-  >;
 }
 
 function createClassedComponent<
