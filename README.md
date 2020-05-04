@@ -30,16 +30,16 @@ const VisitableBreadcrumbLink = BreadcrumbLink.withVariants({ isVisited: 'visite
 
 ## API
 
-### `classedComponent(options): ClassedComponent`
+### `classedComponent(options)`
 
-### `classedComponent(className[, displayName[, variants[, elementType]]]): ClassedComponent`
+### `classedComponent(className[, displayName[, variants[, elementType]]])`
 
 ### `classedComponent(className[, variants[, elementType]])`
 
-### `ClassedComponent.as(elementType): ClassedComponent`
+### `ClassedComponent.as(elementType)`
 
-### `ClassedComponent.withVariants(mergeVariants): ClassedComponent`
+### `ClassedComponent.withVariants(mergeVariants)`
 
-### `ClassedComponent.withOptions(mergeOptions): ClassedComponent`
+### `ClassedComponent.withOptions(mergeOptions)`
 
-### `ClassedComponent.withOptions(oldOptions => newOptions): ClassedComponent`
+### `ClassedComponent.withOptions(oldOptions => newOptions)`
