@@ -32,7 +32,7 @@ const VisitableBreadcrumbLink = BreadcrumbLink.withVariants({ isVisited: 'visite
 
 ### `classedComponent(options)`
 
-Creates a new `ClassedComponent` from an options object with the following properties
+Creates a new `ClassedComponent` from an options object with the following properties. Properties except `className` are optional.
 
 <!-- prettier-ignore -->
 |Name|Type|Description|
@@ -44,19 +44,38 @@ Creates a new `ClassedComponent` from an options object with the following prope
 
 <sup>1</sup> `ClassValue` refers to any kind of value that can be passed into the [`classnames` Function](https://github.com/JedWatson/classnames).
 
+<!-- prettier-ignore -->
+```tsx
+const Button = classedComponent({
+  className: 'custom-button',
+  displayname: 'Button',
+  variants: { isPrimary: 'primary', isCTA: ['secondary', 'cta'] },
+  elementType: 'button'
+});
+```
+
 ### `classedComponent(className[, displayName[, variants[, elementType]]])`
 
 Alias for `classedComponent(options)` containing all options defined above as positional arguments. Options except `className` can be omitted.
+
+<!-- prettier-ignore -->
+```tsx
+const Button = classedComponent('custom-button', 'Button', { isPrimary: 'primary' }, 'button');
+```
 
 ### `classedComponent(className[, variants[, elementType]])`
 
 Alias for `classedComponent(options)` omitting the `displayName` option which will be set to `undefined` when calling this signature.
 
+<!-- prettier-ignore -->
+```tsx
+const Button = classedComponent('custom-button', { isPrimary: 'primary' }, 'button');
+Button.displayName === undefined;
+```
+
 ### `ClassedComponent.as(elementType)`
 
 Creates a copy of a `ClassedComponent` with similar options except the `elementType` being set to a different value
-
-Example:
 
 <!-- prettier-ignore -->
 ```tsx
@@ -71,6 +90,28 @@ const CustomLink = CustomButton.as('a');
 
 ### `ClassedComponent.withVariants(mergeVariants)`
 
+Creates a copy of a `ClassedComponent` with similar options except the `variants` are merged with `mergeVariants`. While old variants that are not specified in the merge variants remain untouched, naming conflicts are resolved by preferring the variants in `mergeVariants`
+
+<!-- prettier-ignore -->
+```tsx
+// button.tsx
+import './buttons.css';
+
+const BaseButton = classComponent('baseButton', 'BaseButton', { isPrimary: 'primary' }, 'button');
+
+// my-custom-container.tsx
+import 'my-custom-container.css';
+
+const CustomButton = BaseButton.withVariants({
+  isFlashy: 'flashyButton',
+});
+
+<CustomButton type="button" isPrimary isFlashy>Click me</CustomButton>
+// renders <button type="button" className="baseButton primary flashyButton">Click me</button>
+```
+
 ### `ClassedComponent.withOptions(mergeOptions)`
+
+Creates a copy of a `ClassedComponent` with options that result from merging the original options with the `mergeOptions` shallowly. When merging, properties from `mergeOptions` have precedence over original properties.
 
 ### `ClassedComponent.withOptions(oldOptions => newOptions)`
