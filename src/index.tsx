@@ -37,14 +37,8 @@ export type ClassedComponent<
   V extends Variants = {}
 > = React.FC<OuterProps<React.ComponentProps<E>, V>> & {
   [__ccOptions]: Options<E, V>;
-  withVariants<V2 extends Variants>(
-    this: ClassedComponent<E, V>,
-    variants: V2
-  ): ClassedComponent<E, V & V2>;
-  as<E2 extends React.ElementType<any>>(
-    this: ClassedComponent<E, V>,
-    elementType: E2
-  ): ClassedComponent<E2, V>;
+  withVariants: typeof withVariants;
+  as: typeof as;
 };
 
 /**
@@ -106,11 +100,16 @@ function withVariants<
   E extends React.ElementType<any> = 'div',
   V extends Variants = {},
   V2 extends Variants = {}
->(this: ClassedComponent<E, V>, variants: V2): ClassedComponent<E, V & V2> {
+>(
+  this: ClassedComponent<E, V>,
+  variants: V2,
+  displayName?: string
+): ClassedComponent<E, V & V2> {
   const options = this[__ccOptions];
   const mergedVariants = { ...options.variants, ...variants } as V & V2;
   return createClassedComponentFromOptions({
     ...options,
+    displayName: displayName || options.displayName,
     variants: mergedVariants,
   });
 }
@@ -125,11 +124,13 @@ function withVariants<
  */
 function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
   this: ClassedComponent<any, V>,
-  elementType: E2
+  elementType: E2,
+  displayName?: string
 ): ClassedComponent<E2, V> {
   const options = this[__ccOptions];
   return createClassedComponentFromOptions<V, E2>({
     ...options,
+    displayName: displayName || options.displayName,
     elementType,
   });
 }
