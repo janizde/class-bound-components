@@ -39,6 +39,16 @@ describe('classed-components', () => {
       );
     });
 
+    it('should append a passed-in className prop', () => {
+      const FooComponent = createClassedComponent('fooClass');
+
+      expect(
+        <FooComponent className="barClass" />,
+        'to exactly render as',
+        <div className="fooClass barClass" />
+      );
+    });
+
     describe('variants', () => {
       it('should add the className of a variant when the flag is set', () => {
         const FooComponent = createClassedComponent(

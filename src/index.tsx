@@ -54,9 +54,9 @@ function createClassedComponentFromOptions<
   type Props = OuterProps<React.ComponentProps<E>, V>;
 
   const ComposedComponent = (() => {
-    return function (props: Props) {
+    return function ({ className: customClassName, ...restProps }: Props) {
       const { componentProps, variantProps } = splitProps(
-        props,
+        restProps,
         options.variants || {}
       );
 
@@ -67,7 +67,8 @@ function createClassedComponentFromOptions<
 
       const componentClassName = classNames(
         options.className,
-        variantClassNames
+        variantClassNames,
+        customClassName
       );
 
       const ElementTypeSafe = (options.elementType ||
