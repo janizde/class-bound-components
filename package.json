@@ -4,7 +4,8 @@
   "description": "Utility to create React components bound to classNames",
   "main": "dist/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
