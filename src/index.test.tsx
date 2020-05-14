@@ -226,5 +226,76 @@ describe('classed-components', () => {
         });
       });
     });
+
+    describe('extend', () => {
+      it('should append a className value to the existing className', () => {
+        const FooComponent = createClassedComponent('fooClass');
+        const Extended = FooComponent.extend(['barClass', 'bazClass']);
+
+        expect(
+          <Extended />,
+          'to exactly render as',
+          <div className="fooClass barClass bazClass" />
+        );
+      });
+
+      it('should not set the displayName when not specified', () => {
+        const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+        const Extended = FooComponent.extend('barClass');
+        expect(Extended.displayName, 'to be', undefined);
+      });
+
+      it('should override the displayName when specified', () => {
+        const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+        const Extended = FooComponent.extend('barClass', 'ExtendedComponent');
+        expect(Extended.displayName, 'to be', 'ExtendedComponent');
+      });
+
+      it('should keep variants when not specified', () => {
+        const FooComponent = createClassedComponent('fooClass', {
+          isActive: 'fooClass--active',
+        });
+
+        const Extended = FooComponent.extend('barClass');
+
+        expect(
+          <Extended isActive />,
+          'to exactly render as',
+          <div className="fooClass barClass fooClass--active" />
+        );
+      });
+
+      it('should merge new variants into the existing variants', () => {
+        const FooComponent = createClassedComponent('fooClass', {
+          isActive: 'fooClass--active',
+        });
+
+        const Extended = FooComponent.extend('barClass', {
+          isFocused: 'barClass--focused',
+        });
+
+        expect(
+          <Extended isActive isFocused />,
+          'to exactly render as',
+          <div className="fooClass barClass fooClass--active barClass--focused" />
+        );
+      });
+
+      it('should combine ClassValues when variant names collide', () => {
+        const FooComponent = createClassedComponent('fooClass', {
+          isActive: 'fooClass--active',
+        });
+
+        const Extended = FooComponent.extend('barClass', {
+          isActive: 'barClass--active',
+        });
+
+        expect(
+          <Extended isActive />,
+          'to exactly render as',
+          <div className="fooClass barClass fooClass--active barClass--active" />
+        );
+      });
+    });
   });
 });

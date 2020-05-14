@@ -25,9 +25,9 @@ type Options<
   // Class that's always applied to the component
   className: ClassValue;
   // `displayName` for the resulting component
-  displayName?: string;
+  displayName: string | undefined;
   // Record mapping the name of a variant to the ClassValue applied when active
-  variants?: V;
+  variants: V;
   // Type of the element, may be a known element string (e.g., 'div') or a React component
   elementType: E;
 };
@@ -39,6 +39,7 @@ export type ClassedComponent<
   [__ccOptions]: Options<E, V>;
   withVariants: typeof withVariants;
   as: typeof as;
+  extend: typeof extend;
 };
 
 /**
@@ -84,8 +85,57 @@ function createClassedComponentFromOptions<
   ComposedComponent[__ccOptions] = options;
   ComposedComponent.withVariants = withVariants;
   ComposedComponent.as = as;
+  ComposedComponent.extend = extend;
 
   return ComposedComponent;
+}
+
+function extend<
+  E extends React.ElementType<any>,
+  V extends Variants,
+  V2 extends Variants
+>(
+  this: ClassedComponent<E, V>,
+  className: ClassValue,
+  variants: V2
+): ClassedComponent<E, V & V2>;
+function extend<
+  E extends React.ElementType<any>,
+  V extends Variants,
+  V2 extends Variants
+>(
+  this: ClassedComponent<E, V>,
+  className: ClassValue,
+  displayName?: string,
+  variants?: V2
+): ClassedComponent<E, V & V2>;
+function extend<
+  E extends React.ElementType<any>,
+  V extends Variants,
+  V2 extends Variants
+>(
+  this: ClassedComponent<E, V>,
+  className: ClassValue,
+  displayNameOrVariants?: string | V2,
+  maybeVariants?: V2
+) {
+  const displayName =
+    typeof displayNameOrVariants === 'string'
+      ? displayNameOrVariants
+      : undefined;
+
+  const variants =
+    typeof displayNameOrVariants === 'object'
+      ? displayNameOrVariants
+      : maybeVariants || ({} as V2);
+
+  const options = this[__ccOptions];
+  return createClassedComponentFromOptions<V & V2, E>({
+    className: mergeClassValues(options.className, className),
+    displayName,
+    variants: mergeVariants<V, V2>(options.variants, variants),
+    elementType: options.elementType,
+  });
 }
 
 /**
@@ -227,4 +277,21 @@ function splitProps<P extends VariantProps<V>, V extends Variants = {}>(
   }
 
   return { componentProps, variantProps };
+}
+
+function mergeClassValues(value1: ClassValue, value2: ClassValue): ClassValue {
+  return value1 && value2 ? [value1, value2] : value1 || value2;
+}
+
+function mergeVariants<V1 extends Variants = {}, V2 extends Variants = {}>(
+  v1: V1,
+  v2: V2
+): V1 & V2 {
+  return Object.keys({ ...v1, ...v2 }).reduce((merged, variantName) => {
+    (merged as Record<string, ClassValue>)[variantName] = mergeClassValues(
+      v1[variantName as keyof V1],
+      v2[variantName as keyof V2]
+    );
+    return merged;
+  }, {} as V1 & V2);
 }
