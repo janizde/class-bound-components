@@ -10,18 +10,15 @@ export const CC_OPTIONS = __ccOptions;
 type Variants = {};
 
 // Props related to enabling and disabling variants
-type VariantProps<V extends Variants = {}> = {
+type VariantProps<V extends Variants> = {
   [K in keyof V]?: boolean;
 };
 
 // Type of props of the wrapper component combining element-related props
 // and props related to variants
-type OuterProps<P, V extends Variants = {}> = P & VariantProps<V>;
+type OuterProps<P, V extends Variants> = P & VariantProps<V>;
 
-type Options<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
-> = {
+type Options<V extends Variants, E extends React.ElementType<any> = 'div'> = {
   // Class that's always applied to the component
   className: ClassValue;
   // `displayName` for the resulting component
@@ -33,10 +30,10 @@ type Options<
 };
 
 export type ClassedComponent<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
+  V extends Variants,
+  E extends React.ElementType<any> = 'div'
 > = React.FC<OuterProps<React.ComponentProps<E>, V>> & {
-  [__ccOptions]: Options<E, V>;
+  [__ccOptions]: Options<V, E>;
   withVariants: typeof withVariants;
   as: typeof as;
   extend: typeof extend;
@@ -49,9 +46,9 @@ export type ClassedComponent<
  * @returns             ClassedComponent
  */
 function createClassedComponentFromOptions<
-  V extends Variants = {},
+  V extends Variants,
   E extends React.ElementType<any> = 'div'
->(options: Options<E, V>) {
+>(options: Options<V, E>) {
   type Props = OuterProps<React.ComponentProps<E>, V>;
 
   const ComposedComponent = (() => {
@@ -79,7 +76,7 @@ function createClassedComponentFromOptions<
         <ElementTypeSafe className={componentClassName} {...componentProps} />
       );
     };
-  })() as ClassedComponent<E, V>;
+  })() as ClassedComponent<V, E>;
 
   ComposedComponent.displayName = options.displayName;
   ComposedComponent[__ccOptions] = options;
@@ -95,26 +92,26 @@ function extend<
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<E, V>,
+  this: ClassedComponent<V, E>,
   className: ClassValue,
   variants: V2
-): ClassedComponent<E, V & V2>;
+): ClassedComponent<V & V2, E>;
 function extend<
   E extends React.ElementType<any>,
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<E, V>,
+  this: ClassedComponent<V, E>,
   className: ClassValue,
   displayName?: string,
   variants?: V2
-): ClassedComponent<E, V & V2>;
+): ClassedComponent<V & V2, E>;
 function extend<
   E extends React.ElementType<any>,
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<E, V>,
+  this: ClassedComponent<V, E>,
   className: ClassValue,
   displayNameOrVariants?: string | V2,
   maybeVariants?: V2
@@ -148,14 +145,14 @@ function extend<
  * @returns               ClassedComponent with merged variants
  */
 function withVariants<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {},
-  V2 extends Variants = {}
+  V extends Variants,
+  V2 extends Variants,
+  E extends React.ElementType<any> = 'div'
 >(
-  this: ClassedComponent<E, V>,
+  this: ClassedComponent<V, E>,
   variants: V2,
   displayName?: string
-): ClassedComponent<E, V & V2> {
+): ClassedComponent<V & V2, E> {
   const options = this[__ccOptions];
   const mergedVariants = { ...options.variants, ...variants } as V & V2;
   return createClassedComponentFromOptions({
@@ -173,11 +170,11 @@ function withVariants<
  * @param     elementType   New element type of ClassedComponent
  * @returns                 ClassedComponent with modified elementType
  */
-function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
-  this: ClassedComponent<any, V>,
+function as<E2 extends React.ElementType<any>, V extends Variants>(
+  this: ClassedComponent<V, any>,
   elementType: E2,
   displayName?: string
-): ClassedComponent<E2, V> {
+): ClassedComponent<V, E2> {
   const options = this[__ccOptions];
   return createClassedComponentFromOptions<V, E2>({
     ...options,
@@ -187,22 +184,22 @@ function as<E2 extends React.ElementType<any>, V extends Variants = {}>(
 }
 
 function createClassedComponent<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
->(options: Options<E, V>): ClassedComponent<E, V>;
+  V extends Variants,
+  E extends React.ElementType<any> = 'div'
+>(options: Options<V, E>): ClassedComponent<V, E>;
 function createClassedComponent<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
+  V extends Variants,
+  E extends React.ElementType<any> = 'div'
 >(
   className: ClassValue,
   displayName?: string,
   variants?: V,
   elementType?: E
-): ClassedComponent<E, V>;
+): ClassedComponent<V, E>;
 function createClassedComponent<
-  E extends React.ElementType<any> = 'div',
-  V extends Variants = {}
->(className: ClassValue, variants: V, elementType?: E): ClassedComponent<E, V>;
+  V extends Variants,
+  E extends React.ElementType<any> = 'div'
+>(className: ClassValue, variants: V, elementType?: E): ClassedComponent<V, E>;
 function createClassedComponent(
   optionsOrClassName: any,
   displayNameOrVariants?: any,
@@ -263,7 +260,7 @@ type SplitProps<P extends VariantProps<V>, V> = {
  * @param     variants    Variants object
  * @returns               Object with `variantProps` and `componentProps`
  */
-function splitProps<P extends VariantProps<V>, V extends Variants = {}>(
+function splitProps<P extends VariantProps<V>, V extends Variants>(
   props: P,
   variants: V
 ): SplitProps<P, V> {
@@ -283,7 +280,7 @@ function mergeClassValues(value1: ClassValue, value2: ClassValue): ClassValue {
   return value1 && value2 ? [value1, value2] : value1 || value2;
 }
 
-function mergeVariants<V1 extends Variants = {}, V2 extends Variants = {}>(
+function mergeVariants<V1 extends Variants, V2 extends Variants>(
   v1: V1,
   v2: V2
 ): V1 & V2 {
