@@ -1,4 +1,4 @@
-# class-bound-components ⚛️ 🖼 [![Build Status](https://travis-ci.com/janizde/class-bound-components.svg?branch=master)](https://travis-ci.com/janizde/class-bound-components)
+# class-bound-components ⚛️ 🖼 [![Build Status](https://travis-ci.com/janizde/class-bound-components.svg?branch=master)](https://travis-ci.com/janizde/class-bound-components) [![npm version](https://badge.fury.io/js/class-bound-components.svg)](https://badge.fury.io/js/class-bound-components)
 
 React components bound to class names. As simple as that. Without tagged template literals.
 
@@ -49,6 +49,18 @@ const BreadcrumbButton = BreadcrumbLink.as('button');
 const VisitableBreadcrumbLink = BreadcrumbLink.withVariants({ isVisited: 'visited' });
 const CustomBreadcrumbItem = BreadcrumbItem.extend('custom-breadcrumb-item', 'CustomBreadcrumbItem', { isActive: 'custom-active' });
 ```
+
+## Installation
+
+```sh
+# With npm
+npm install --save class-bound-components
+
+# With yarn
+yarn add class-bound-components
+```
+
+In both cases make sure you have `react` as well as `react-dom` added to your project.
 
 ## API
 
