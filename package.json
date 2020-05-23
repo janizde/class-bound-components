@@ -1,9 +1,17 @@
 {
   "name": "class-bound-components",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "description": "Utility to create React components bound to classNames",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
+  "keywords": [
+    "react",
+    "classnames",
+    "class name",
+    "bind",
+    "component",
+    "css-modules"
+  ],
   "scripts": {
     "test": "jest",
     "build": "tsc"

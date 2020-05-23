@@ -1,4 +1,4 @@
-# class-bound-components ⚛️ 🖼
+# class-bound-components ⚛️ 🖼 [![Build Status](https://travis-ci.com/janizde/class-bound-components.svg?branch=master)](https://travis-ci.com/janizde/class-bound-components)
 
 React components bound to class names. As simple as that. Without tagged template literals.
 

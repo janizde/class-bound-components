@@ -1,0 +1,6 @@
+src
+.gitignore
+.prettierrc
+.travis.yml
+babel.config.js
+tsconfig.json
