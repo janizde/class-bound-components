@@ -285,26 +285,45 @@ const createClassBoundComponent = function (
   variantsOrElementType?: any,
   elementType?: any
 ) {
+  return createClassBoundComponentFromOptions(
+    argumentsToOptions(
+      optionsOrClassName,
+      displayNameOrVariants,
+      variantsOrElementType,
+      elementType
+    )
+  );
+} as CreateClassBoundComponentFn<any>;
+
+/**
+ * Converts the positional arguments of the overloaded function signatures to an options object
+ */
+function argumentsToOptions(
+  optionsOrClassName: any,
+  displayNameOrVariants?: any,
+  variantsOrElementType?: any,
+  elementType?: any
+) {
   if (typeof optionsOrClassName === 'object') {
-    return createClassBoundComponentFromOptions(optionsOrClassName);
+    return optionsOrClassName;
   }
 
   if (typeof displayNameOrVariants === 'object') {
-    return createClassBoundComponentFromOptions({
+    return {
       className: optionsOrClassName,
       displayName: undefined,
       variants: displayNameOrVariants,
       elementType: 'div',
-    });
+    };
   }
 
-  return createClassBoundComponentFromOptions({
+  return {
     className: optionsOrClassName,
     displayName: displayNameOrVariants,
     variants: variantsOrElementType,
     elementType,
-  });
-} as CreateClassBoundComponentFn<any>;
+  };
+}
 
 /**
  * Creates an array of ClassValues of those variants that are enabled in the props
@@ -377,14 +396,14 @@ type CreateClassBoundComponentProxy = CreateClassBoundComponentFn<any> &
 
 const wrappedInProxy = (Proxy
   ? new Proxy(createClassBoundComponent, {
-      get(target, elementType: keyof JSX.IntrinsicElements) {
+      get(_, elementType: keyof JSX.IntrinsicElements) {
         return function (
           ...args: Parameters<typeof createClassBoundComponent>
         ) {
-          return target(...args).withOptions((options) => ({
-            ...options,
+          return createClassBoundComponentFromOptions({
+            ...argumentsToOptions(...args),
             elementType,
-          }));
+          });
         };
       },
     })
