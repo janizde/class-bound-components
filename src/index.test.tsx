@@ -1,6 +1,6 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
-import createClassBoundComponent, { CC_OPTIONS } from './index';
+import createClassBoundComponent, { CBC_OPTIONS } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
 
@@ -258,7 +258,7 @@ describe('classed-components', () => {
           'a'
         );
 
-        expect(FooLink[CC_OPTIONS], 'to equal', {
+        expect(FooLink[CBC_OPTIONS], 'to equal', {
           className: 'fooClass',
           displayName: 'FooLink',
           variants: { bar: 'barClass' },
