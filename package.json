@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "description": "Utility to create React components bound to classNames",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc"
