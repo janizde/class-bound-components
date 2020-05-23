@@ -1,4 +1,14 @@
-# class-bound-components ⚛️🖼
+# class-bound-components ⚛️ 🖼
+
+React components bound to class names. As simple as that. Without tagged template literals.
+
+## What it does
+
+- Create component bound to one or more class name
+- Apply class names based on boolean props, referred to as _variants_
+- Offers shortcut members to wrap intrinsic elements such as `classBound.blockquote('my-blockquote')`
+- Extend existing class bound components with the modifiers `.extend`, `.as(component)`, `.withVariants` and `.withOptions`
+- Strong TypeScript support: Allowed props restricted to those of the composed component and variant flags
 
 ## Why not [`styled-components`](https://styled-components.com/)
 
@@ -49,7 +59,7 @@ Creates a new `ClassBoundComponent` from an options object with the following pr
 <!-- prettier-ignore -->
 |Name|Type|Description|
 |-----|-----|-----|
-|`className`|`string | string[]`|Classes that are applied to the base component without any condition|
+|`className`|`string` or `string[]`|Classes that are applied to the base component without any condition|
 |`displayName`|`string`|Display name of the component created. This appears for instance in the React devtools. When omitted it's referred to as *Anonymous*|
 |`variants`|`Record<string, ClassValue>`<sup>1</sup>|Object mapping the name of a variant, i.e., the name of the prop that has to be set to enable the variant, to a `ClassValue` that should be applied when the variant is enabled.|
 |`elementType`|`React.ElementType<any>`|Type of element to use a the base for the component. May be any string recognized by `ReactDOM` or a custom React component. default: `'div'`|
@@ -66,7 +76,7 @@ const Button = classBound({
 });
 ```
 
-### `classBound[JSX.IntrinsicAttribute](className[, displayName[, variants]])`
+### `classBound[JSX.IntrinsicElement](className[, displayName[, variants]])`
 
 Alias for `classBound(options)` offering a member on the `classBound` function for all known intrinsic elements, i.e., leaf elements that are recognized by React DOM.
 
@@ -86,7 +96,7 @@ Alias for `classBoundComponent(options)` containing all options defined above as
 
 <!-- prettier-ignore -->
 ```tsx
-const Button = classBoundComponent('custom-button', 'Button', { isPrimary: 'primary' }, 'button');
+const Button = classBound('custom-button', 'Button', { isPrimary: 'primary' }, 'button');
 const UnnamedButton = classBound('custom-button', { isPrimary: 'primary' }, 'button');
 ```
 
@@ -96,8 +106,25 @@ Alias for `classBoundComponent(options)` omitting the `displayName` option which
 
 <!-- prettier-ignore -->
 ```tsx
-const Button = classBoundComponent('custom-button', { isPrimary: 'primary' }, 'button');
+const Button = classBound('custom-button', { isPrimary: 'primary' }, 'button');
 Button.displayName === undefined; // Meh, not interested in `displayName`
+```
+
+### `ClassBoundComponent.extend(className[, displayName][, variants])`
+
+Extends an existing `ClassBoundComponent` with class names and variants so that class names and already existing variants are combined. Useful when existing class names and variant class names should persist while augmenting them with more specific classes. The `displayName` argument can optionally be left out.
+
+```tsx
+const Button = classBound.button('button', 'Button', {
+  isActive: 'button-active',
+});
+
+const CustomButton = Button.extend('custom-button', 'CustomButton', {
+  isActive: 'custom-button-active',
+});
+
+<CustomButton isActive />;
+// renders <button className="button custom-button button-active custom-button-active" />
 ```
 
 ### `ClassBoundComponent.as(elementType)`
@@ -144,6 +171,7 @@ Creates a copy of a `ClassBoundComponent` by applying the provided function on t
 
 ```tsx
 const Button = classBound.button('button', 'Button', { variantA: 'variant-a' });
+
 const CustomButton = Button.withOptions((options) => ({
   className: [options.className, 'fooClass', 'barClass'],
   variants: { ...options.variants, variantB: 'variant-b' },
