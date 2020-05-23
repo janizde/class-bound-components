@@ -17,6 +17,33 @@ describe('classed-components', () => {
       );
     });
 
+    it('should omit the className prop when the resulting className is empty', () => {
+      const FooComponent = createClassBoundComponent({
+        variants: {
+          isFoo: 'fooClass',
+        },
+      });
+
+      expect(<FooComponent />, 'to exactly render as', <div />);
+    });
+
+    it('should accept an options object as only argument', () => {
+      const FooComponent = createClassBoundComponent({
+        className: 'fooClass',
+        displayName: 'FooComponent',
+        variants: {
+          isBar: 'barClass',
+        },
+        elementType: 'a',
+      });
+
+      expect(
+        <FooComponent isBar />,
+        'to exactly render as',
+        <a className="fooClass barClass" />
+      );
+    });
+
     it('should set the name of the function to an empty string', () => {
       const FooComponent = createClassBoundComponent('fooClass');
       expect(FooComponent.name, 'to be', '');
@@ -314,6 +341,40 @@ describe('classed-components', () => {
           'to exactly render as',
           <div className="fooClass barClass fooClass--active barClass--active" />
         );
+      });
+    });
+
+    describe('withOptions', () => {
+      it('should create a similar component when passing through props', () => {
+        const FooButton = createClassBoundComponent({
+          className: 'fooClass',
+          displayName: 'FooButton',
+          elementType: 'button',
+          variants: {
+            bar: 'barClass',
+          },
+        }).withOptions((options) => options);
+
+        expect(FooButton.displayName, 'to be', 'FooButton');
+        expect(
+          <FooButton bar />,
+          'to exactly render as',
+          <button className="fooClass barClass" />
+        );
+      });
+
+      it('should default options that are not returned', () => {
+        const FooButton = createClassBoundComponent({
+          className: 'fooClass',
+          displayName: 'FooButton',
+          elementType: 'button',
+          variants: {
+            bar: 'barClass',
+          },
+        }).withOptions(() => ({}));
+
+        expect(FooButton.displayName, 'to be', undefined);
+        expect(<FooButton />, 'to exactly render as', <div />);
       });
     });
   });
