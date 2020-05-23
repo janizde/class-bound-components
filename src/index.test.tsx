@@ -1,13 +1,13 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
-import createClassedComponent, { CC_OPTIONS } from './index';
+import createClassBoundComponent, { CC_OPTIONS } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
 
 describe('classed-components', () => {
-  describe('createClassedComponent', () => {
+  describe('createClassBoundComponent', () => {
     it('should create a div component with the provided className and pass down props', () => {
-      const FooComponent = createClassedComponent('fooClass');
+      const FooComponent = createClassBoundComponent('fooClass');
 
       expect(
         <FooComponent>Bar</FooComponent>,
@@ -18,18 +18,24 @@ describe('classed-components', () => {
     });
 
     it('should set the name of the function to an empty string', () => {
-      const FooComponent = createClassedComponent('fooClass');
+      const FooComponent = createClassBoundComponent('fooClass');
       expect(FooComponent.name, 'to be', '');
       expect(FooComponent.displayName, 'to be', undefined);
     });
 
     it('should set the displayName to the value provided', () => {
-      const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+      const FooComponent = createClassBoundComponent(
+        'fooClass',
+        'FooComponent'
+      );
       expect(FooComponent.displayName, 'to be', 'FooComponent');
     });
 
     it('should pass down non-variant props', () => {
-      const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+      const FooComponent = createClassBoundComponent(
+        'fooClass',
+        'FooComponent'
+      );
       expect(
         <FooComponent tabIndex={-1}>foobar</FooComponent>,
         'to exactly render as',
@@ -40,7 +46,7 @@ describe('classed-components', () => {
     });
 
     it('should append a passed-in className prop', () => {
-      const FooComponent = createClassedComponent('fooClass');
+      const FooComponent = createClassBoundComponent('fooClass');
 
       expect(
         <FooComponent className="barClass" />,
@@ -51,7 +57,7 @@ describe('classed-components', () => {
 
     describe('variants', () => {
       it('should add the className of a variant when the flag is set', () => {
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           { bar: 'barClass' }
@@ -65,7 +71,7 @@ describe('classed-components', () => {
       });
 
       it('should concatenate multiple class names when an array is given for a variant', () => {
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           {
@@ -81,7 +87,7 @@ describe('classed-components', () => {
       });
 
       it('should not add a variant className when the prop is not set', () => {
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           { bar: 'barClass' }
@@ -97,7 +103,7 @@ describe('classed-components', () => {
 
     describe('elementType', () => {
       it('should render a <span /> when the elementType is set to it', () => {
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           {},
@@ -112,7 +118,7 @@ describe('classed-components', () => {
       });
 
       it('should pass down element specific props', () => {
-        const FooLink = createClassedComponent(
+        const FooLink = createClassBoundComponent(
           'fooLinkClass',
           'FooLink',
           {},
@@ -131,7 +137,7 @@ describe('classed-components', () => {
         const Inner: React.FC<{ className?: string }> = () => (
           <span>Inner component</span>
         );
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           {},
@@ -151,7 +157,7 @@ describe('classed-components', () => {
           color: 'green' | 'blue';
         }> = ({ color }) => <span>{color}</span>;
 
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           {},
@@ -168,9 +174,11 @@ describe('classed-components', () => {
 
     describe('withVariants', () => {
       it('should add a variant', () => {
-        const FooComponent = createClassedComponent('fooClass').withVariants({
-          bar: 'barClass',
-        });
+        const FooComponent = createClassBoundComponent('fooClass').withVariants(
+          {
+            bar: 'barClass',
+          }
+        );
 
         expect(
           <FooComponent bar />,
@@ -180,7 +188,7 @@ describe('classed-components', () => {
       });
 
       it('should only override variants with same name', () => {
-        const FooComponent = createClassedComponent(
+        const FooComponent = createClassBoundComponent(
           'fooClass',
           'FooComponent',
           { bar: 'oldBarClass', baz: 'bazClass' }
@@ -196,7 +204,12 @@ describe('classed-components', () => {
 
     describe('as', () => {
       it('should return a new component with the specified elementType', () => {
-        const FooLink = createClassedComponent('fooLink', 'FooLink', {}, 'a');
+        const FooLink = createClassBoundComponent(
+          'fooLink',
+          'FooLink',
+          {},
+          'a'
+        );
         const FooButton = FooLink.as('button');
 
         expect(
@@ -211,7 +224,7 @@ describe('classed-components', () => {
 
     describe('options', () => {
       it('should make the options accessible with the symbol', () => {
-        const FooLink = createClassedComponent(
+        const FooLink = createClassBoundComponent(
           'fooClass',
           'FooLink',
           { bar: 'barClass' },
@@ -229,7 +242,7 @@ describe('classed-components', () => {
 
     describe('extend', () => {
       it('should append a className value to the existing className', () => {
-        const FooComponent = createClassedComponent('fooClass');
+        const FooComponent = createClassBoundComponent('fooClass');
         const Extended = FooComponent.extend(['barClass', 'bazClass']);
 
         expect(
@@ -240,19 +253,25 @@ describe('classed-components', () => {
       });
 
       it('should not set the displayName when not specified', () => {
-        const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+        const FooComponent = createClassBoundComponent(
+          'fooClass',
+          'FooComponent'
+        );
         const Extended = FooComponent.extend('barClass');
         expect(Extended.displayName, 'to be', undefined);
       });
 
       it('should override the displayName when specified', () => {
-        const FooComponent = createClassedComponent('fooClass', 'FooComponent');
+        const FooComponent = createClassBoundComponent(
+          'fooClass',
+          'FooComponent'
+        );
         const Extended = FooComponent.extend('barClass', 'ExtendedComponent');
         expect(Extended.displayName, 'to be', 'ExtendedComponent');
       });
 
       it('should keep variants when not specified', () => {
-        const FooComponent = createClassedComponent('fooClass', {
+        const FooComponent = createClassBoundComponent('fooClass', {
           isActive: 'fooClass--active',
         });
 
@@ -266,7 +285,7 @@ describe('classed-components', () => {
       });
 
       it('should merge new variants into the existing variants', () => {
-        const FooComponent = createClassedComponent('fooClass', {
+        const FooComponent = createClassBoundComponent('fooClass', {
           isActive: 'fooClass--active',
         });
 
@@ -282,7 +301,7 @@ describe('classed-components', () => {
       });
 
       it('should combine ClassValues when variant names collide', () => {
-        const FooComponent = createClassedComponent('fooClass', {
+        const FooComponent = createClassBoundComponent('fooClass', {
           isActive: 'fooClass--active',
         });
 

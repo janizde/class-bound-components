@@ -29,7 +29,7 @@ type Options<V extends Variants, E extends React.ElementType<any> = 'div'> = {
   elementType: E;
 };
 
-export type ClassedComponent<
+export type ClassBoundComponent<
   V extends Variants,
   E extends React.ElementType<any> = 'div'
 > = React.FC<OuterProps<React.ComponentProps<E>, V>> & {
@@ -40,12 +40,12 @@ export type ClassedComponent<
 };
 
 /**
- * Creates a `ClassedComponent` with the options object provided in `options`
+ * Creates a `ClassBoundComponent` with the options object provided in `options`
  *
- * @param   options     Options for the ClassedComponent
- * @returns             ClassedComponent
+ * @param   options     Options for the ClassBoundComponent
+ * @returns             ClassBoundComponent
  */
-function createClassedComponentFromOptions<
+function createClassBoundComponentFromOptions<
   V extends Variants,
   E extends React.ElementType<any> = 'div'
 >(options: Options<V, E>) {
@@ -76,7 +76,7 @@ function createClassedComponentFromOptions<
         <ElementTypeSafe className={componentClassName} {...componentProps} />
       );
     };
-  })() as ClassedComponent<V, E>;
+  })() as ClassBoundComponent<V, E>;
 
   ComposedComponent.displayName = options.displayName;
   ComposedComponent[__ccOptions] = options;
@@ -92,26 +92,26 @@ function extend<
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<V, E>,
+  this: ClassBoundComponent<V, E>,
   className: ClassValue,
   variants: V2
-): ClassedComponent<V & V2, E>;
+): ClassBoundComponent<V & V2, E>;
 function extend<
   E extends React.ElementType<any>,
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<V, E>,
+  this: ClassBoundComponent<V, E>,
   className: ClassValue,
   displayName?: string,
   variants?: V2
-): ClassedComponent<V & V2, E>;
+): ClassBoundComponent<V & V2, E>;
 function extend<
   E extends React.ElementType<any>,
   V extends Variants,
   V2 extends Variants
 >(
-  this: ClassedComponent<V, E>,
+  this: ClassBoundComponent<V, E>,
   className: ClassValue,
   displayNameOrVariants?: string | V2,
   maybeVariants?: V2
@@ -127,7 +127,7 @@ function extend<
       : maybeVariants || ({} as V2);
 
   const options = this[__ccOptions];
-  return createClassedComponentFromOptions<V & V2, E>({
+  return createClassBoundComponentFromOptions<V & V2, E>({
     className: mergeClassValues(options.className, className),
     displayName,
     variants: mergeVariants<V, V2>(options.variants, variants),
@@ -136,26 +136,26 @@ function extend<
 }
 
 /**
- * Creates a new ClassedComponent with the same options as this ClassedComponent
+ * Creates a new ClassBoundComponent with the same options as this ClassBoundComponent
  * except the variants being extended with `variants`. While existing variants remain,
  * new variants override old variants if they're named similarly.
  *
  * @param     this
  * @param     variants    Variants to merge into this component's variants
- * @returns               ClassedComponent with merged variants
+ * @returns               ClassBoundComponent with merged variants
  */
 function withVariants<
   V extends Variants,
   V2 extends Variants,
   E extends React.ElementType<any> = 'div'
 >(
-  this: ClassedComponent<V, E>,
+  this: ClassBoundComponent<V, E>,
   variants: V2,
   displayName?: string
-): ClassedComponent<V & V2, E> {
+): ClassBoundComponent<V & V2, E> {
   const options = this[__ccOptions];
   const mergedVariants = { ...options.variants, ...variants } as V & V2;
-  return createClassedComponentFromOptions({
+  return createClassBoundComponentFromOptions({
     ...options,
     displayName: displayName || options.displayName,
     variants: mergedVariants,
@@ -163,31 +163,31 @@ function withVariants<
 }
 
 /**
- * Creates a new ClassedComponent with the same options as this ClassedComponent
+ * Creates a new ClassBoundComponent with the same options as this ClassBoundComponent
  * except the `elementType` being set to the `elementType` from the parameters.
  *
  * @param     this
- * @param     elementType   New element type of ClassedComponent
- * @returns                 ClassedComponent with modified elementType
+ * @param     elementType   New element type of ClassBoundComponent
+ * @returns                 ClassBoundComponent with modified elementType
  */
 function as<E2 extends React.ElementType<any>, V extends Variants>(
-  this: ClassedComponent<V, any>,
+  this: ClassBoundComponent<V, any>,
   elementType: E2,
   displayName?: string
-): ClassedComponent<V, E2> {
+): ClassBoundComponent<V, E2> {
   const options = this[__ccOptions];
-  return createClassedComponentFromOptions<V, E2>({
+  return createClassBoundComponentFromOptions<V, E2>({
     ...options,
     displayName: displayName || options.displayName,
     elementType,
   });
 }
 
-function createClassedComponent<
+function createClassBoundComponent<
   V extends Variants,
   E extends React.ElementType<any> = 'div'
->(options: Options<V, E>): ClassedComponent<V, E>;
-function createClassedComponent<
+>(options: Options<V, E>): ClassBoundComponent<V, E>;
+function createClassBoundComponent<
   V extends Variants,
   E extends React.ElementType<any> = 'div'
 >(
@@ -195,23 +195,27 @@ function createClassedComponent<
   displayName?: string,
   variants?: V,
   elementType?: E
-): ClassedComponent<V, E>;
-function createClassedComponent<
+): ClassBoundComponent<V, E>;
+function createClassBoundComponent<
   V extends Variants,
   E extends React.ElementType<any> = 'div'
->(className: ClassValue, variants: V, elementType?: E): ClassedComponent<V, E>;
-function createClassedComponent(
+>(
+  className: ClassValue,
+  variants: V,
+  elementType?: E
+): ClassBoundComponent<V, E>;
+function createClassBoundComponent(
   optionsOrClassName: any,
   displayNameOrVariants?: any,
   variantsOrElementType?: any,
   elementType?: any
 ) {
   if (typeof optionsOrClassName === 'object') {
-    return createClassedComponentFromOptions(optionsOrClassName);
+    return createClassBoundComponentFromOptions(optionsOrClassName);
   }
 
   if (typeof displayNameOrVariants === 'object') {
-    return createClassedComponentFromOptions({
+    return createClassBoundComponentFromOptions({
       className: optionsOrClassName,
       displayName: undefined,
       variants: displayNameOrVariants,
@@ -219,7 +223,7 @@ function createClassedComponent(
     });
   }
 
-  return createClassedComponentFromOptions({
+  return createClassBoundComponentFromOptions({
     className: optionsOrClassName,
     displayName: displayNameOrVariants,
     variants: variantsOrElementType,
@@ -227,7 +231,7 @@ function createClassedComponent(
   });
 }
 
-export default createClassedComponent;
+export default createClassBoundComponent;
 
 /**
  * Creates an array of ClassValues of those variants that are enabled in the props
