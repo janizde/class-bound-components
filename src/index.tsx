@@ -334,26 +334,28 @@ function mergeVariants<V1 extends Variants, V2 extends Variants>(
   }, {} as V1 & V2);
 }
 
-type createClassBoundComponentProxy = {
-  <V extends Variants, E extends React.ElementType<any> = 'div'>(
-    options: Partial<Options<V, E>>
-  ): ClassBoundComponent<V, E>;
-  <V extends Variants, E extends React.ElementType<any> = 'div'>(
+type createClassBoundComponent<E extends React.ElementType<any> = 'div'> = {
+  <V extends Variants>(options: Partial<Options<V, E>>): ClassBoundComponent<
+    V,
+    E
+  >;
+  <V extends Variants>(
     className: string | string[] | null | undefined,
     displayName?: string,
     variants?: V,
     elementType?: E
   ): ClassBoundComponent<V, E>;
-  <V extends Variants, E extends React.ElementType<any> = 'div'>(
+  <V extends Variants>(
     className: ClassValue,
     variants: V,
     elementType?: E
   ): ClassBoundComponent<V, E>;
-} & {
-  [K in keyof JSX.IntrinsicElements]: <V extends Variants>(
-    ...args: Parameters<typeof createClassBoundComponent>
-  ) => ClassBoundComponent<V, K>;
 };
+
+type createClassBoundComponentProxy = createClassBoundComponent<any> &
+  {
+    [K in keyof JSX.IntrinsicElements]: createClassBoundComponent<K>;
+  };
 
 const wrappedInProxy = (Proxy
   ? new Proxy(createClassBoundComponent, {

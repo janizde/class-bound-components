@@ -377,5 +377,29 @@ describe('classed-components', () => {
         expect(<FooButton />, 'to exactly render as', <div />);
       });
     });
+
+    describe('elementType proxy', () => {
+      it('should offer member shortcuts for intrinsic elements', () => {
+        const FooLink = createClassBoundComponent.a('fooClass', 'FooLink', {
+          isBar: 'barClass',
+        });
+
+        expect(
+          <FooLink isBar />,
+          'to exactly render as',
+          <a className="fooClass barClass" />
+        );
+      });
+
+      it('should override the elementType given in the arguments', () => {
+        const FooLink = createClassBoundComponent.a({
+          className: 'fooClass',
+          displayName: 'FooLink',
+          elementType: 'button',
+        } as any); // TypeScript wouldn't allow this anyway
+
+        expect(<FooLink />, 'to exactly render as', <a className="fooClass" />);
+      });
+    });
   });
 });
