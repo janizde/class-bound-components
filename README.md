@@ -151,7 +151,7 @@ Creates a copy of a `ClassBoundComponent` with similar options except the `varia
 // button.tsx
 import './buttons.css';
 
-const BaseButton = classComponent('baseButton', 'BaseButton', { isPrimary: 'primary', isFlashy: 'flashy' }, 'button');
+const BaseButton = classBound.button('baseButton', 'BaseButton', { isPrimary: 'primary', isFlashy: 'flashy' });
 
 // my-custom-container.tsx
 import 'my-custom-container.css';
