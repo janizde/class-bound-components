@@ -4,7 +4,7 @@ import createClassBoundComponent, { CBC_OPTIONS } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
 
-describe('classed-components', () => {
+describe('class-bound-components', () => {
   describe('createClassBoundComponent', () => {
     it('should create a div component with the provided className and pass down props', () => {
       const FooComponent = createClassBoundComponent('fooClass');
