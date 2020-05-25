@@ -3,9 +3,7 @@ import unexpected from 'unexpected';
 const expect = unexpected.clone();
 
 function importClassBound() {
-  return import('./index').then(
-    ({ default: createClassedComponent }) => createClassedComponent
-  );
+  return import('./index').then((module) => module.default);
 }
 
 describe('class-bound-components', () => {
@@ -24,7 +22,7 @@ describe('class-bound-components', () => {
       );
     });
 
-    it('should allow to create a classed component without the proxy', () => {
+    it('should allow to create a class bound component without the proxy', () => {
       return expect(
         importClassBound().then((createClassBoundComponent) =>
           createClassBoundComponent('fooClass', 'FooComponent')
