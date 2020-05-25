@@ -7,7 +7,7 @@ const __cbcOptions = Symbol('__classBoundComponentOptions');
 export const CBC_OPTIONS = __cbcOptions;
 
 // Base type for variants
-type Variants = {};
+type Variants = Record<string, ClassValue>;
 
 // Props related to enabling and disabling variants
 type VariantProps<V extends Variants> = {
@@ -86,14 +86,11 @@ function createClassBoundComponentFromOptions<
       const ElementTypeSafe = (options.elementType ||
         'div') as React.ElementType;
 
-      return (
-        <ElementTypeSafe
-          className={
-            componentClassName.length < 1 ? undefined : componentClassName
-          }
-          {...componentProps}
-        />
-      );
+      return React.createElement(ElementTypeSafe, {
+        className:
+          componentClassName.length < 1 ? undefined : componentClassName,
+        ...componentProps,
+      });
     };
   })() as ClassBoundComponent<V, E>;
 
@@ -345,7 +342,7 @@ function makeVariantClassNames<V extends Variants>(
   return classNames;
 }
 
-type SplitProps<P extends VariantProps<V>, V> = {
+type SplitProps<P extends VariantProps<V>, V extends Variants> = {
   variantProps: VariantProps<V>;
   componentProps: Omit<P, keyof V>;
 };
@@ -361,7 +358,7 @@ function splitProps<P extends VariantProps<V>, V extends Variants>(
   variants: V
 ): SplitProps<P, V> {
   const componentProps: P = { ...props };
-  const variantProps: VariantProps<P> = {};
+  const variantProps: VariantProps<V> = {};
   for (const variantName in variants) {
     if (props.hasOwnProperty(variantName)) {
       variantProps[variantName] = props[variantName];
