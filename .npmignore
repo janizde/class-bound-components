@@ -4,3 +4,4 @@ src
 .travis.yml
 babel.config.js
 tsconfig.json
+coverage

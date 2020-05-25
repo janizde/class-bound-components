@@ -1,4 +1,4 @@
-# class-bound-components ⚛️ 🖼 [![Build Status](https://travis-ci.com/janizde/class-bound-components.svg?branch=master)](https://travis-ci.com/janizde/class-bound-components) [![npm version](https://badge.fury.io/js/class-bound-components.svg)](https://badge.fury.io/js/class-bound-components)
+# class-bound-components ⚛️ 🖼 [![Build Status](https://travis-ci.com/janizde/class-bound-components.svg?branch=master)](https://travis-ci.com/janizde/class-bound-components) [![npm version](https://badge.fury.io/js/class-bound-components.svg)](https://badge.fury.io/js/class-bound-components) [![Coverage Status](https://coveralls.io/repos/github/janizde/class-bound-components/badge.svg?branch=master)](https://coveralls.io/github/janizde/class-bound-components?branch=master)
 
 React components bound to class names. As simple as that. Without tagged template literals.
 
