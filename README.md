@@ -195,3 +195,7 @@ CustomButton.displayName === 'Custom(Button)';
 <CustomButton variantA variantB />;
 // renders <button classNames="button fooClass barClass variantA variantB">
 ```
+
+## TypeScript
+
+`class-bound-components` is built in TypeScript so it supports strong static types out of the box. In particular it is aware of the props that are allowed to be passed to components, be it the passed-down props of the composed element type (e.g., the props of a `<button />` element) or props introduced through custom variants. Of course types are also provided for the different signatures of the `classBound` function and the member functions on the components.
