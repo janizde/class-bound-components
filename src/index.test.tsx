@@ -337,6 +337,22 @@ describe('class-bound-components', () => {
         );
       });
 
+      it('should merge variants when the original variants are undefined', () => {
+        const FooComponent = createClassBoundComponent(
+          'fooClass'
+        ).withOptions((options) => ({ ...options, variants: undefined }));
+
+        const Extended = FooComponent.extend('barClass', {
+          isBar: 'barVariant',
+        });
+
+        expect(
+          <Extended isBar />,
+          'to exactly render as',
+          <div className="fooClass barClass barVariant" />
+        );
+      });
+
       it('should not set the displayName when not specified', () => {
         const FooComponent = createClassBoundComponent(
           'fooClass',
