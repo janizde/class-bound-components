@@ -50,6 +50,16 @@ const VisitableBreadcrumbLink = BreadcrumbLink.withVariants({ isVisited: 'visite
 const CustomBreadcrumbItem = BreadcrumbItem.extend('custom-breadcrumb-item', 'CustomBreadcrumbItem', { isActive: 'custom-active' });
 ```
 
+## Contents
+
+1. [Installation](#installation)
+2. [API](#api)
+3. [Usage with CSS Modules](#usage-with-css-modules)
+4. [TypeScript Support](#typescript-support)
+5. [Ref Forwarding](#ref-forwarding)
+6. [Changelog](./CHANGELOG.md)
+7. [License](./LICENSE)
+
 ## Installation
 
 ```sh
@@ -263,3 +273,5 @@ const CustomFunctionComponent = classBound(
 );
 const el3 = <CustomFunctionComponent ref={imageRef} />; // This doesn't work since `FunctionComponent` doesn't have a ref
 ```
+
+&copy; 2020 Jannik Portz – [License](./LICENSE)

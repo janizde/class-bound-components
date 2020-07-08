@@ -2,6 +2,7 @@ src
 .gitignore
 .prettierrc
 .travis.yml
+.eslintrc
 babel.config.js
 tsconfig.json
 coverage
