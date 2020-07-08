@@ -3,6 +3,7 @@ src
 .prettierrc
 .travis.yml
 .eslintrc
+.vscode
 babel.config.js
 tsconfig.json
 coverage
