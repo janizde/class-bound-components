@@ -231,3 +231,35 @@ const Container: React.FC = () => <Button isActive>Click me</Button>;
 ## TypeScript
 
 `class-bound-components` is built in TypeScript so it supports strong static types out of the box. In particular it is aware of the props that are allowed to be passed to components, be it the passed-down props of the composed element type (e.g., the props of a `<button />` element) or props introduced through custom variants. Of course types are also provided for the different signatures of the `classBound` function and the member functions on the components.
+
+## Ref Forwarding
+
+`class-bound-components` handles ref-forwarding automatically. This means for intrinsic elements like `div` or `img` it will create a `React.forwardRef` component as well as in the case of passing it a `forwardRef` component as `elementType`. For other cases a regular function component is returned.
+
+```tsx
+// Wrapping an intrinsic element
+const CustomImage = classBound('custom-image', null, 'img');
+const imageRef = React.createRef<HTMLImageElement>();
+const el1 = <CustomImage ref={imageRef} />; // This works by default!
+
+// Wrapping a ref forwarding component
+const RefForwardingImage = React.forwardRef<HTMLImageElement, {}>((_, ref) => (
+  <img ref={imageRef} />
+));
+
+const CustomRefForwardingImage = classBound(
+  'custom-image',
+  null,
+  RefForwardingImage
+);
+const el2 = <CustomRefForwardingImage ref={imageRef} />; // This works as well!
+
+// Wrapping a non ref forwarding component
+const FunctionComponent: React.FC<{}> = () => <img alt="No ref here" />;
+const CustomFunctionComponent = classBound(
+  'custom-image',
+  null,
+  FunctionComponent
+);
+const el3 = <CustomFunctionComponent ref={imageRef} />; // This doesn't work since `FunctionComponent` doesn't have a ref
+```
