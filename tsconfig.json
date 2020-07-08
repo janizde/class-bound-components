@@ -6,8 +6,8 @@
     "outDir": "./dist",
     "strict": true,
     "jsx": "react",
-    "removeComments": false
+    "removeComments": false,
+    "typeRoots": ["./typings", "./node_modules/@types"]
   },
-  "include": ["src"],
   "exclude": ["node_modules", "**/*.test.tsx", "dist"]
 }

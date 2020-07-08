@@ -1,5 +1,6 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
+import * as TestUtils from 'react-dom/test-utils';
 import createClassBoundComponent, { CBC_OPTIONS } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
@@ -46,7 +47,7 @@ describe('class-bound-components', () => {
 
     it('should set the name of the function to an empty string', () => {
       const FooComponent = createClassBoundComponent('fooClass');
-      expect(FooComponent.name, 'to be', '');
+      expect(FooComponent.name, 'to be', undefined);
       expect(FooComponent.displayName, 'to be', undefined);
     });
 
@@ -55,6 +56,7 @@ describe('class-bound-components', () => {
         'fooClass',
         'FooComponent'
       );
+
       expect(FooComponent.displayName, 'to be', 'FooComponent');
     });
 
@@ -63,6 +65,7 @@ describe('class-bound-components', () => {
         'fooClass',
         'FooComponent'
       );
+
       expect(
         <FooComponent tabIndex={-1}>foobar</FooComponent>,
         'to exactly render as',
@@ -80,6 +83,50 @@ describe('class-bound-components', () => {
         'to exactly render as',
         <div className="fooClass barClass" />
       );
+    });
+
+    describe('ref', () => {
+      it('should forward a ref to an intrinsic element', () => {
+        const ref = React.createRef<HTMLImageElement>();
+        const FooImage = createClassBoundComponent.img('imgClass', 'Image');
+
+        TestUtils.renderIntoDocument(<FooImage ref={ref} />);
+        expect(ref.current, 'to be an', HTMLImageElement);
+      });
+
+      it(`should not create a forwardRef component when passed a non-ref-passing function component`, () => {
+        const CustomComponent: React.FC = () => <div>Hello World</div>;
+
+        const WrappedComponent = createClassBoundComponent({
+          elementType: CustomComponent,
+        });
+
+        expect(
+          (WrappedComponent as any).$$typeof,
+          'not to be',
+          Symbol.for('react.forward_ref')
+        );
+      });
+
+      it('should create a ref forwarding component when passed a forwardRef as elementType', () => {
+        const RefForwarding = React.forwardRef<HTMLImageElement>((_, ref) => (
+          <img ref={ref} />
+        ));
+
+        const WrappedComponent = createClassBoundComponent({
+          elementType: RefForwarding,
+        });
+
+        expect(
+          WrappedComponent.$$typeof,
+          'to be',
+          Symbol.for('react.forward_ref')
+        );
+
+        const ref = React.createRef<HTMLImageElement>();
+        TestUtils.renderIntoDocument(<WrappedComponent ref={ref} />);
+        expect(ref.current, 'to be an', HTMLImageElement);
+      });
     });
 
     describe('variants', () => {
@@ -125,6 +172,17 @@ describe('class-bound-components', () => {
           'to exactly render as',
           <div className="fooClass" />
         );
+      });
+
+      it('should treat null as an empty variants object', () => {
+        const FooComponent = createClassBoundComponent(
+          'fooClass',
+          'FooComponent',
+          null,
+          'a'
+        );
+
+        expect(FooComponent[CBC_OPTIONS].variants, 'to equal', {});
       });
     });
 
