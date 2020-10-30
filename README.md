@@ -7,7 +7,7 @@ React components bound to class names. As simple as that. Without tagged templat
 - Create component bound to one or more class name
 - Apply class names based on boolean props, referred to as _variants_
 - Offers shortcut members to wrap intrinsic elements such as `classBound.blockquote('my-blockquote')`
-- Extend existing class bound components with the modifiers `.extend`, `.as(component)`, `.withVariants` and `.withOptions`
+- Extend existing class bound components with the modifiers `extend`, `as`, `withVariants` and `withOptions`
 - Strong TypeScript support: Allowed props restricted to those of the composed component and variant flags
 
 ## Why not [`styled-components`](https://styled-components.com/)
@@ -28,10 +28,10 @@ This is where `class-bound-components` comes into play. It allows you to bind cl
 import classBound from 'class-bound-components';
 import './breadcrumb.css';
 
-const Container = classBound('container', 'Container');
-const Breadcrumb = classBound.ol('breadcrumb', 'Breadcrumb');
-const BreadcrumbItem = classBound.li('breadcrumb-item', 'BreadcrumbItem', { isActive: 'active' });
-const BreadcrumbLink = classBound.a('breadcrumb-link', 'BreadcrumbLink');
+const Container = classBound('container');
+const Breadcrumb = classBound.ol('breadcrumb');
+const BreadcrumbItem = classBound.li('breadcrumb-item', { isActive: 'active' });
+const BreadcrumbLink = classBound.a('breadcrumb-link');
 
 const BreadcrumbContainer: React.FC<{ items: Item[]; activeId: number }> = ({ items, activeId }) => (
   <Container>
@@ -45,9 +45,9 @@ const BreadcrumbContainer: React.FC<{ items: Item[]; activeId: number }> = ({ it
   </Container>
 );
 
-const BreadcrumbButton = BreadcrumbLink.as('button');
-const VisitableBreadcrumbLink = BreadcrumbLink.withVariants({ isVisited: 'visited' });
-const CustomBreadcrumbItem = BreadcrumbItem.extend('custom-breadcrumb-item', 'CustomBreadcrumbItem', { isActive: 'custom-active' });
+const BreadcrumbButton = classBound.as(BreadcrumbLink, 'button');
+const VisitableBreadcrumbLink = classBound.withVariants(BreadcrumbLink, { isVisited: 'visited' });
+const CustomBreadcrumbItem = classBound.extend(BreadcrumbLink, 'custom-breadcrumb-item', { isActive: 'custom-active' });
 ```
 
 ## Contents
@@ -74,7 +74,9 @@ In both cases make sure you have `react` as well as `react-dom` added to your pr
 
 ## API
 
-### `classBound(options)`
+### Component Creation
+
+#### `classBound(options)`
 
 Creates a new `ClassBoundComponent` from an options object with the following properties. All options are optional.
 
@@ -98,7 +100,7 @@ const Button = classBound({
 });
 ```
 
-### `classBound[JSX.IntrinsicElement](className[, displayName[, variants]])`
+#### `classBound[JSX.IntrinsicElement](className[, displayName[, variants]])`
 
 Alias for `classBound(options)` offering a member on the `classBound` function for all known intrinsic elements, i.e., leaf elements that are recognized by React DOM.
 
@@ -112,7 +114,7 @@ const CustomLink = classBound.a('custom-link', 'CustomLink', {
 const CustomQuote = classBound.blockquote('custom-quote');
 ```
 
-### `classBound(className[, displayName[, variants[, elementType]]])`
+#### `classBound(className[, displayName[, variants[, elementType]]])`
 
 Alias for `classBoundComponent(options)` containing all options defined above as positional arguments.
 
@@ -122,7 +124,7 @@ const Button = classBound('custom-button', 'Button', { isPrimary: 'primary' }, '
 const UnnamedButton = classBound('custom-button', { isPrimary: 'primary' }, 'button');
 ```
 
-### `classBound(className[, variants[, elementType]])`
+#### `classBound(className[, variants[, elementType]])`
 
 Alias for `classBoundComponent(options)` omitting the `displayName` option which will be set to `undefined` when calling this signature.
 
@@ -132,7 +134,25 @@ const Button = classBound('custom-button', { isPrimary: 'primary' }, 'button');
 Button.displayName === undefined; // Meh, not interested in `displayName`
 ```
 
-### `ClassBoundComponent.extend(className[, displayName][, variants])`
+### Modifiers
+
+Modifiers are functions with which clones of an existing `ClassBoundComponent` can be created with slight modifications. The modifiers `extend`, `withVariants`, `withOptions` and `as` are accessible as members of the `classBound` function. Additionally, all of them can be imported as named imports from `class-bound-components`
+
+```ts
+import classBound, {
+  extend,
+  withVariants,
+  withOptions,
+  as,
+} from 'class-bound-components';
+
+classBound.extend === extend;
+classBound.withVariants === withVariants;
+classBound.withOptions === withOptions;
+classBound.as === as;
+```
+
+#### `classBound.extend(ClassBoundComponent, className[, displayName][, variants])`
 
 Extends an existing `ClassBoundComponent` with class names and variants so that class names and already existing variants are combined. Useful when existing class names and variant class names should persist while augmenting them with more specific classes. The `displayName` argument can optionally be left out.
 
@@ -141,15 +161,20 @@ const Button = classBound.button('button', 'Button', {
   isActive: 'button-active',
 });
 
-const CustomButton = Button.extend('custom-button', 'CustomButton', {
-  isActive: 'custom-button-active',
-});
+const CustomButton = classBound.extend(
+  Button,
+  'custom-button',
+  'CustomButton',
+  {
+    isActive: 'custom-button-active',
+  }
+);
 
 <CustomButton isActive />;
 // renders <button className="button custom-button button-active custom-button-active" />
 ```
 
-### `ClassBoundComponent.as(elementType)`
+#### `classBound.as(ClassBoundComponent, elementType)`
 
 Creates a copy of a `ClassBoundComponent` with similar options except the `elementType` being set to a different value
 
@@ -158,13 +183,13 @@ Creates a copy of a `ClassBoundComponent` with similar options except the `eleme
 const CustomButton = classBound.button('custom-button', 'CustomButton', { isPrimary: 'primary' });
 
 // Oops need the same styles as an `<a />` tag
-const CustomLink = CustomButton.as('a');
+const CustomLink = classBound.as(CustomButton, 'a');
 
 <CustomLink href="https://example.com/" target="_blank" isPrimary>Click me!</CustomLink>
          // ^ awesome! TypeScript allows these <a> specific props now!
 ```
 
-### `ClassBoundComponent.withVariants(mergeVariants)`
+#### `classBound.withVariants(ClassBoundComponent, mergeVariants)`
 
 Creates a copy of a `ClassBoundComponent` with similar options except the `variants` are merged with `mergeVariants`. While old variants that are not specified in the merge variants remain untouched, naming conflicts are resolved by preferring the variants in `mergeVariants`. Note that this differs from the behavior of `ClassBoundComponent.extend`.
 
@@ -178,7 +203,7 @@ const BaseButton = classBound.button('baseButton', 'BaseButton', { isPrimary: 'p
 // my-custom-container.tsx
 import 'my-custom-container.css';
 
-const CustomButton = BaseButton.withVariants({
+const CustomButton = classBound.withVariants(BaseButton, {
   isFlashy: 'customFlashy',
 });
 
@@ -187,14 +212,14 @@ const CustomButton = BaseButton.withVariants({
 // note that `flashy` got removed in favor of `customFlashy`
 ```
 
-### `ClassBoundComponent.withOptions(oldOptions => newOptions)`
+#### `classBound.withOptions(ClassBoundComponent, oldOptions => newOptions)`
 
 Creates a copy of a `ClassBoundComponent` by applying the provided function on the existing options and taking the return value of the function as the new options.
 
 ```tsx
 const Button = classBound.button('button', 'Button', { variantA: 'variant-a' });
 
-const CustomButton = Button.withOptions((options) => ({
+const CustomButton = classBound.withOptions(Button, (options) => ({
   className: [options.className, 'fooClass', 'barClass'],
   variants: { ...options.variants, variantB: 'variant-b' },
   displayName: `Custom(${options.displayName})`,
@@ -248,7 +273,7 @@ const Container: React.FC = () => <Button isActive>Click me</Button>;
 
 ```tsx
 // Wrapping an intrinsic element
-const CustomImage = classBound('custom-image', null, 'img');
+const CustomImage = classBound.img('custom-image');
 const imageRef = React.createRef<HTMLImageElement>();
 const el1 = <CustomImage ref={imageRef} />; // This works by default!
 
