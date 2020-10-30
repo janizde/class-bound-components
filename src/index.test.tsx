@@ -1,14 +1,21 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
 import * as TestUtils from 'react-dom/test-utils';
-import createClassBoundComponent, { CBC_OPTIONS } from './index';
+
+import classBound, {
+  CBC_OPTIONS,
+  extend,
+  withVariants,
+  withOptions,
+  as,
+} from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
 
 describe('class-bound-components', () => {
   describe('createClassBoundComponent', () => {
     it('should create a div component with the provided className and pass down props', () => {
-      const FooComponent = createClassBoundComponent('fooClass');
+      const FooComponent = classBound('fooClass');
 
       expect(
         <FooComponent>Bar</FooComponent>,
@@ -19,7 +26,7 @@ describe('class-bound-components', () => {
     });
 
     it('should omit the className prop when the resulting className is empty', () => {
-      const FooComponent = createClassBoundComponent({
+      const FooComponent = classBound({
         variants: {
           isFoo: 'fooClass',
         },
@@ -29,7 +36,7 @@ describe('class-bound-components', () => {
     });
 
     it('should accept an options object as only argument', () => {
-      const FooComponent = createClassBoundComponent({
+      const FooComponent = classBound({
         className: 'fooClass',
         displayName: 'FooComponent',
         variants: {
@@ -46,25 +53,19 @@ describe('class-bound-components', () => {
     });
 
     it('should set the name of the function to an empty string', () => {
-      const FooComponent = createClassBoundComponent('fooClass');
+      const FooComponent = classBound('fooClass');
       expect(FooComponent.name, 'to be', undefined);
       expect(FooComponent.displayName, 'to be', undefined);
     });
 
     it('should set the displayName to the value provided', () => {
-      const FooComponent = createClassBoundComponent(
-        'fooClass',
-        'FooComponent'
-      );
+      const FooComponent = classBound('fooClass', 'FooComponent');
 
       expect(FooComponent.displayName, 'to be', 'FooComponent');
     });
 
     it('should pass down non-variant props', () => {
-      const FooComponent = createClassBoundComponent(
-        'fooClass',
-        'FooComponent'
-      );
+      const FooComponent = classBound('fooClass', 'FooComponent');
 
       expect(
         <FooComponent tabIndex={-1}>foobar</FooComponent>,
@@ -76,7 +77,7 @@ describe('class-bound-components', () => {
     });
 
     it('should append a passed-in className prop', () => {
-      const FooComponent = createClassBoundComponent('fooClass');
+      const FooComponent = classBound('fooClass');
 
       expect(
         <FooComponent className="barClass" />,
@@ -88,7 +89,7 @@ describe('class-bound-components', () => {
     describe('ref', () => {
       it('should forward a ref to an intrinsic element', () => {
         const ref = React.createRef<HTMLImageElement>();
-        const FooImage = createClassBoundComponent.img('imgClass', 'Image');
+        const FooImage = classBound.img('imgClass', 'Image');
 
         TestUtils.renderIntoDocument(<FooImage ref={ref} />);
         expect(ref.current, 'to be an', HTMLImageElement);
@@ -97,7 +98,7 @@ describe('class-bound-components', () => {
       it(`should not create a forwardRef component when passed a non-ref-passing function component`, () => {
         const CustomComponent: React.FC = () => <div>Hello World</div>;
 
-        const WrappedComponent = createClassBoundComponent({
+        const WrappedComponent = classBound({
           elementType: CustomComponent,
         });
 
@@ -113,7 +114,7 @@ describe('class-bound-components', () => {
           <img ref={ref} />
         ));
 
-        const WrappedComponent = createClassBoundComponent({
+        const WrappedComponent = classBound({
           elementType: RefForwarding,
         });
 
@@ -131,11 +132,9 @@ describe('class-bound-components', () => {
 
     describe('variants', () => {
       it('should add the className of a variant when the flag is set', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          { bar: 'barClass' }
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {
+          bar: 'barClass',
+        });
 
         expect(
           <FooComponent bar />,
@@ -145,13 +144,9 @@ describe('class-bound-components', () => {
       });
 
       it('should concatenate multiple class names when an array is given for a variant', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          {
-            bar: ['barClass', 'bazClass'],
-          }
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {
+          bar: ['barClass', 'bazClass'],
+        });
 
         expect(
           <FooComponent bar />,
@@ -161,11 +156,9 @@ describe('class-bound-components', () => {
       });
 
       it('should not add a variant className when the prop is not set', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          { bar: 'barClass' }
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {
+          bar: 'barClass',
+        });
 
         expect(
           <FooComponent />,
@@ -175,12 +168,7 @@ describe('class-bound-components', () => {
       });
 
       it('should treat null as an empty variants object', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          null,
-          'a'
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', null, 'a');
 
         expect(FooComponent[CBC_OPTIONS].variants, 'to equal', {});
       });
@@ -188,12 +176,7 @@ describe('class-bound-components', () => {
 
     describe('elementType', () => {
       it('should render a <span /> when the elementType is set to it', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          {},
-          'span'
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {}, 'span');
 
         expect(
           <FooComponent>foobar</FooComponent>,
@@ -203,12 +186,7 @@ describe('class-bound-components', () => {
       });
 
       it('should pass down element specific props', () => {
-        const FooLink = createClassBoundComponent(
-          'fooLinkClass',
-          'FooLink',
-          {},
-          'a'
-        );
+        const FooLink = classBound('fooLinkClass', 'FooLink', {}, 'a');
         expect(
           <FooLink href="https://example.com/">Click here</FooLink>,
           'to exactly render as',
@@ -222,12 +200,7 @@ describe('class-bound-components', () => {
         const Inner: React.FC<{ className?: string }> = () => (
           <span>Inner component</span>
         );
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          {},
-          Inner
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {}, Inner);
 
         expect(
           <FooComponent />,
@@ -242,12 +215,7 @@ describe('class-bound-components', () => {
           color: 'green' | 'blue';
         }> = ({ color }) => <span>{color}</span>;
 
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          {},
-          Inner
-        );
+        const FooComponent = classBound('fooClass', 'FooComponent', {}, Inner);
 
         expect(
           <FooComponent color="green" />,
@@ -258,12 +226,14 @@ describe('class-bound-components', () => {
     });
 
     describe('withVariants', () => {
+      it('exports withVariants as standalone function', () => {
+        expect(withVariants, 'to be', classBound.withVariants);
+      });
+
       it('should add a variant', () => {
-        const FooComponent = createClassBoundComponent('fooClass').withVariants(
-          {
-            bar: 'barClass',
-          }
-        );
+        const FooComponent = classBound.withVariants(classBound('fooClass'), {
+          bar: 'barClass',
+        });
 
         expect(
           <FooComponent bar />,
@@ -273,11 +243,15 @@ describe('class-bound-components', () => {
       });
 
       it('should only override variants with same name', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent',
-          { bar: 'oldBarClass', baz: 'bazClass' }
-        ).withVariants({ bar: 'barClass' });
+        const FooComponent = classBound.withVariants(
+          classBound('fooClass', 'FooComponent', {
+            bar: 'oldBarClass',
+            baz: 'bazClass',
+          }),
+          {
+            bar: 'barClass',
+          }
+        );
 
         expect(
           <FooComponent bar baz />,
@@ -288,14 +262,13 @@ describe('class-bound-components', () => {
     });
 
     describe('as', () => {
+      it('exports _as_ as standalone function', () => {
+        expect(as, 'to be', classBound.as);
+      });
+
       it('should return a new component with the specified elementType', () => {
-        const FooLink = createClassBoundComponent(
-          'fooLink',
-          'FooLink',
-          {},
-          'a'
-        );
-        const FooButton = FooLink.as('button');
+        const FooLink = classBound('fooLink', 'FooLink', {}, 'a');
+        const FooButton = classBound.as(FooLink, 'button');
 
         expect(
           <FooButton type="button">Click here</FooButton>,
@@ -309,7 +282,7 @@ describe('class-bound-components', () => {
 
     describe('options', () => {
       it('should make the options accessible with the symbol', () => {
-        const FooLink = createClassBoundComponent(
+        const FooLink = classBound(
           'fooClass',
           'FooLink',
           { bar: 'barClass' },
@@ -326,9 +299,16 @@ describe('class-bound-components', () => {
     });
 
     describe('extend', () => {
+      it('exports extend as standalone function', () => {
+        expect(extend, 'to be', classBound.extend);
+      });
+
       it('should append a className value to the existing className', () => {
-        const FooComponent = createClassBoundComponent('fooClass');
-        const Extended = FooComponent.extend(['barClass', 'bazClass']);
+        const FooComponent = classBound('fooClass');
+        const Extended = classBound.extend(FooComponent, [
+          'barClass',
+          'bazClass',
+        ]);
 
         expect(
           <Extended />,
@@ -338,11 +318,15 @@ describe('class-bound-components', () => {
       });
 
       it('should merge variants when the original variants are undefined', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass'
-        ).withOptions((options) => ({ ...options, variants: undefined }));
+        const FooComponent = classBound.withOptions(
+          classBound('fooClass'),
+          (options) => ({
+            ...options,
+            variants: undefined,
+          })
+        );
 
-        const Extended = FooComponent.extend('barClass', {
+        const Extended = classBound.extend(FooComponent, 'barClass', {
           isBar: 'barVariant',
         });
 
@@ -354,29 +338,27 @@ describe('class-bound-components', () => {
       });
 
       it('should not set the displayName when not specified', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent'
-        );
-        const Extended = FooComponent.extend('barClass');
+        const FooComponent = classBound('fooClass', 'FooComponent');
+        const Extended = classBound.extend(FooComponent, 'barClass');
         expect(Extended.displayName, 'to be', undefined);
       });
 
       it('should override the displayName when specified', () => {
-        const FooComponent = createClassBoundComponent(
-          'fooClass',
-          'FooComponent'
+        const FooComponent = classBound('fooClass', 'FooComponent');
+        const Extended = classBound.extend(
+          FooComponent,
+          'barClass',
+          'ExtendedComponent'
         );
-        const Extended = FooComponent.extend('barClass', 'ExtendedComponent');
         expect(Extended.displayName, 'to be', 'ExtendedComponent');
       });
 
       it('should keep variants when not specified', () => {
-        const FooComponent = createClassBoundComponent('fooClass', {
+        const FooComponent = classBound('fooClass', {
           isActive: 'fooClass--active',
         });
 
-        const Extended = FooComponent.extend('barClass');
+        const Extended = classBound.extend(FooComponent, 'barClass');
 
         expect(
           <Extended isActive />,
@@ -386,11 +368,11 @@ describe('class-bound-components', () => {
       });
 
       it('should merge new variants into the existing variants', () => {
-        const FooComponent = createClassBoundComponent('fooClass', {
+        const FooComponent = classBound('fooClass', {
           isActive: 'fooClass--active',
         });
 
-        const Extended = FooComponent.extend('barClass', {
+        const Extended = classBound.extend(FooComponent, 'barClass', {
           isFocused: 'barClass--focused',
         });
 
@@ -402,11 +384,11 @@ describe('class-bound-components', () => {
       });
 
       it('should combine ClassValues when variant names collide', () => {
-        const FooComponent = createClassBoundComponent('fooClass', {
+        const FooComponent = classBound('fooClass', {
           isActive: 'fooClass--active',
         });
 
-        const Extended = FooComponent.extend('barClass', {
+        const Extended = classBound.extend(FooComponent, 'barClass', {
           isActive: 'barClass--active',
         });
 
@@ -419,15 +401,22 @@ describe('class-bound-components', () => {
     });
 
     describe('withOptions', () => {
+      it('exports withOptions as standalone function', () => {
+        expect(withOptions, 'to be', classBound.withOptions);
+      });
+
       it('should create a similar component when passing through props', () => {
-        const FooButton = createClassBoundComponent({
-          className: 'fooClass',
-          displayName: 'FooButton',
-          elementType: 'button',
-          variants: {
-            bar: 'barClass',
-          },
-        }).withOptions((options) => options);
+        const FooButton = classBound.withOptions(
+          classBound({
+            className: 'fooClass',
+            displayName: 'FooButton',
+            elementType: 'button',
+            variants: {
+              bar: 'barClass',
+            },
+          }),
+          (options) => options
+        );
 
         expect(FooButton.displayName, 'to be', 'FooButton');
         expect(
@@ -438,14 +427,17 @@ describe('class-bound-components', () => {
       });
 
       it('should default options that are not returned', () => {
-        const FooButton = createClassBoundComponent({
-          className: 'fooClass',
-          displayName: 'FooButton',
-          elementType: 'button',
-          variants: {
-            bar: 'barClass',
-          },
-        }).withOptions(() => ({}));
+        const FooButton = classBound.withOptions(
+          classBound({
+            className: 'fooClass',
+            displayName: 'FooButton',
+            elementType: 'button',
+            variants: {
+              bar: 'barClass',
+            },
+          }),
+          () => ({})
+        );
 
         expect(FooButton.displayName, 'to be', undefined);
         expect(<FooButton />, 'to exactly render as', <div />);
@@ -454,7 +446,7 @@ describe('class-bound-components', () => {
 
     describe('elementType proxy', () => {
       it('should offer member shortcuts for intrinsic elements', () => {
-        const FooLink = createClassBoundComponent.a('fooClass', 'FooLink', {
+        const FooLink = classBound.a('fooClass', 'FooLink', {
           isBar: 'barClass',
         });
 
@@ -466,7 +458,7 @@ describe('class-bound-components', () => {
       });
 
       it('should override the elementType given in the arguments', () => {
-        const FooLink = createClassBoundComponent.a({
+        const FooLink = classBound.a({
           className: 'fooClass',
           displayName: 'FooLink',
           elementType: 'button',
