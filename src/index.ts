@@ -2,7 +2,7 @@ import * as React from 'react';
 import classNames from 'classnames';
 import { ClassValue, ClassArray } from 'classnames/types';
 
-export const CBC_OPTIONS = Symbol('__classBoundComponentOptions');
+export const CBC_OPTIONS = '__cbc_options';
 
 // Base type for variants
 type Variants = {};
