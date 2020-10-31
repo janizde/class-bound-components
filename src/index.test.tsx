@@ -1,6 +1,7 @@
 import * as React from 'react';
 import unexpected from 'unexpected';
 import * as TestUtils from 'react-dom/test-utils';
+import { create } from 'react-test-renderer';
 
 import classBound, {
   CBC_OPTIONS,
@@ -11,6 +12,9 @@ import classBound, {
 } from './index';
 
 const expect = unexpected.clone().use(require('unexpected-react'));
+const expectTestRenderer = unexpected
+  .clone()
+  .use(require('unexpected-react/test-renderer'));
 
 describe('class-bound-components', () => {
   describe('createClassBoundComponent', () => {
@@ -19,8 +23,7 @@ describe('class-bound-components', () => {
 
       expect(
         <FooComponent>Bar</FooComponent>,
-        'when rendered',
-        'to have exactly rendered',
+        'to exactly render as',
         <div className="fooClass">Bar</div>
       );
     });
@@ -83,6 +86,52 @@ describe('class-bound-components', () => {
         <FooComponent className="barClass" />,
         'to exactly render as',
         <div className="fooClass barClass" />
+      );
+    });
+
+    it('should accept className, variants and elementType as arguments', () => {
+      const FooComponent = classBound(
+        'fooClass',
+        { bar: 'barClass' },
+        'article'
+      );
+
+      expect(
+        <FooComponent bar />,
+        'to exactly render as',
+        <article className="fooClass barClass" />
+      );
+    });
+
+    it('should render an inline functional component', () => {
+      const Inner: React.FC<{ className?: string; isBaz: boolean }> = ({
+        className,
+        isBaz,
+      }) => (
+        <div>
+          <span className={className}>{isBaz && 'isBaz'}</span>
+        </div>
+      );
+
+      const FooComponent = classBound(
+        'fooClass',
+        'FooComp',
+        { isBar: 'barClass' },
+        Inner
+      );
+
+      const rendered = create(
+        <FooComponent isBar isBaz>
+          Content
+        </FooComponent>
+      );
+
+      expectTestRenderer(
+        rendered,
+        'to have exactly rendered',
+        <div>
+          <span className="fooClass barClass">isBaz</span>
+        </div>
       );
     });
 

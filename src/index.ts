@@ -87,6 +87,9 @@ function createClassBoundComponentFromOptions<
   type Props = OuterProps<React.ComponentProps<E>, V>;
 
   const ElementTypeSafe = (options.elementType || 'div') as React.ElementType;
+  const shouldForwardRef =
+    typeof ElementTypeSafe === 'string' ||
+    (ElementTypeSafe as any).$$typeof === Symbol.for('react.forward_ref');
 
   const render = (() => (
     { className: customClassName, ...restProps }: Props,
@@ -108,15 +111,19 @@ function createClassBoundComponentFromOptions<
       customClassName
     );
 
-    return React.createElement(ElementTypeSafe, {
+    const props: React.ComponentProps<typeof ElementTypeSafe> = {
       className: componentClassName.length < 1 ? undefined : componentClassName,
       ...componentProps,
-      ref,
-    });
+    };
+
+    if (shouldForwardRef) {
+      props.ref = ref;
+    }
+
+    return React.createElement(ElementTypeSafe, props);
   })();
 
-  const ComposedComponent = (typeof ElementTypeSafe === 'string' ||
-  (ElementTypeSafe as any).$$typeof === Symbol.for('react.forward_ref')
+  const ComposedComponent = (shouldForwardRef
     ? React.forwardRef<RefElementType<E>, Props>(render)
     : render) as ClassBoundComponent<V, E>;
 
@@ -382,7 +389,7 @@ function argumentsToOptions(
       className: optionsOrClassName,
       displayName: undefined,
       variants: displayNameOrVariants,
-      elementType: 'div',
+      elementType: variantsOrElementType ?? elementType ?? 'div',
     };
   }
 
