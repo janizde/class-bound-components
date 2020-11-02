@@ -309,6 +309,17 @@ type CreateClassBoundComponentFn = {
     variants: V | null,
     elementType?: E
   ): ClassBoundComponent<V, E>;
+  /**
+   * Signature not intended for primary use. This one makes it easier for babel-plugin-class-bound-components
+   * to fall back to a safe signature when it can't infer which signature is used
+   * @deprecated
+   */
+  <V extends Variants = {}, E extends React.ElementType<any> = 'div'>(
+    className: ClassValue,
+    variants: V,
+    placeholder: null,
+    elementType?: E
+  ): ClassBoundComponent<V, E>;
 } & CreateClassBoundComponentMethods;
 
 type CreateClassBoundComponentForTypeFn<

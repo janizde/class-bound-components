@@ -103,6 +103,21 @@ describe('class-bound-components', () => {
       );
     });
 
+    it('should accept className, variants, null and elementType as arguments', () => {
+      const FooComponent = classBound(
+        'fooClass',
+        { bar: 'barClass' },
+        null,
+        'article'
+      );
+
+      expect(
+        <FooComponent bar />,
+        'to exactly render as',
+        <article className="fooClass barClass" />
+      );
+    });
+
     it('should render an inline functional component', () => {
       const Inner: React.FC<{ className?: string; isBaz: boolean }> = ({
         className,
@@ -514,6 +529,15 @@ describe('class-bound-components', () => {
         } as any); // TypeScript wouldn't allow this anyway
 
         expect(<FooLink />, 'to exactly render as', <a className="fooClass" />);
+      });
+
+      it('should take the second argument as variants', () => {
+        const FooComponent = classBound.h1('fooClass', { bar: 'barClass' });
+        expect(
+          <FooComponent bar />,
+          'to exactly render as',
+          <h1 className="fooClass barClass" />
+        );
       });
     });
   });
