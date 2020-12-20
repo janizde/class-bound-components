@@ -58,12 +58,13 @@ const CustomBreadcrumbItem = classBound.extend(BreadcrumbLink, 'custom-breadcrum
 ## Contents
 
 1. [Installation](#installation)
-2. [API](#api)
-3. [Usage with CSS Modules](#usage-with-css-modules)
-4. [TypeScript Support](#typescript-support)
-5. [Ref Forwarding](#ref-forwarding)
-6. [Changelog](./CHANGELOG.md)
-7. [License](./LICENSE)
+1. [API](#api)
+1. [Usage with CSS Modules](#usage-with-css-modules)
+1. [Display Names](#display-names)
+1. [TypeScript Support](#typescript-support)
+1. [Ref Forwarding](#ref-forwarding)
+1. [Changelog](./CHANGELOG.md)
+1. [License](./LICENSE)
 
 ## Installation
 
