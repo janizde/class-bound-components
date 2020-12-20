@@ -10,6 +10,11 @@ React components bound to class names. As simple as that. Without tagged templat
 - Extend existing class bound components with the modifiers `extend`, `as`, `withVariants` and `withOptions`
 - Strong TypeScript support: Allowed props restricted to those of the composed component and variant flags
 
+**Use [`babel-plugin-class-bound-components`](https://www.npmjs.com/package/babel-plugin-class-bound-components) to benefit from:**
+
+- Automatic inferring of display names like you're used to with regular React functional components
+- Backwards compatibility with browsers not supporting ES6 `Proxy`, but still being able to use the `classBound[JSX.IntrinsicElement]()` shorthand (e.g., `classBound.button('foo')` instead of `classBound('foo', null, null, 'button')`)
+
 ## Why not [`styled-components`](https://styled-components.com/)
 
 While CSS-in-JS approaches like styled-components have gained a lot of attention in the last couple of years you might be in a position where you can't or don't want to move to CSS-in-JS
@@ -104,7 +109,7 @@ const Button = classBound({
 
 Alias for `classBound(options)` offering a member on the `classBound` function for all known intrinsic elements, i.e., leaf elements that are recognized by React DOM.
 
-Note that these shortcut members make use of the JavaScript [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) object. Using this in a browser that does not support `Proxy` will throw a runtime error. In these cases refer to `elementType` in the other signatures.
+Note that these shortcut members make use of the JavaScript [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) object. Using this in a browser that does not support `Proxy` will throw a runtime error. If you need to support such browsers, it is recommended to make use of the [`babel-plugin-class-bound-components`](https://www.npmjs.com/package/babel-plugin-class-bound-components), which will inline these method calls to the standard `elementType` argument and hence won't use `Proxy` anymore.
 
 ```tsx
 const CustomLink = classBound.a('custom-link', 'CustomLink', {
@@ -262,6 +267,14 @@ export const Button = classBound.button(buttonStyles.button, {
 // provides these class names for the module styles
 const Container: React.FC = () => <Button isActive>Click me</Button>;
 ```
+
+## Display Names
+
+Usually, `displayName`s in React benefit from the automatic assignment to `Function.name` when defining a functional component, which will make the component appear as the name of the function in React DevTools and Error traces.
+
+Unfortunately, this doesn't work for components created with `classBound`, since these are defined in a closure. For this, all signatures of `classBound` can be provided with an explicit string for the `displayName` property of the component.
+
+This can be omitted when using [babel-plugin-class-bound-components](https://www.npmjs.com/package/babel-plugin-class-bound-components). This babel plugin tries to infer the `displayName` in the fashion like `Function.name` would normally do and inlines these into the calls of `classBound`, so you don't have to repeat yourself over and over again. Read more [in the transformation documentation](https://github.com/janizde/babel-plugin-class-bound-components#display-name-inlining).
 
 ## TypeScript
 
