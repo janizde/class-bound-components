@@ -1,6 +1,5 @@
 import * as React from 'react';
-import classNames from 'classnames';
-import { ClassValue, ClassArray } from 'classnames/types';
+import classNames, { Argument as ClassNamesArgument } from 'classnames';
 
 export const CBC_OPTIONS = '__cbc_options';
 
@@ -29,7 +28,7 @@ type RefElementType<
 
 type Options<V extends Variants, E extends React.ElementType<any> = 'div'> = {
   // Class that's always applied to the component
-  className: ClassValue | undefined;
+  className: ClassNamesArgument;
   // `displayName` for the resulting component
   displayName: string | undefined;
   // Record mapping the name of a variant to the ClassValue applied when active
@@ -144,7 +143,7 @@ type ExtendFn = {
    */
   <E extends React.ElementType<any>, V extends Variants, V2 extends Variants>(
     component: ClassBoundComponent<V, E>,
-    className: ClassValue,
+    className: ClassNamesArgument,
     variants: V2
   ): ClassBoundComponent<V & V2, E>;
   /**
@@ -158,7 +157,7 @@ type ExtendFn = {
    */
   <E extends React.ElementType<any>, V extends Variants, V2 extends Variants>(
     component: ClassBoundComponent<V, E>,
-    className: ClassValue,
+    className: ClassNamesArgument,
     displayName?: string,
     variants?: V2
   ): ClassBoundComponent<V & V2, E>;
@@ -170,7 +169,7 @@ const extend = function <
   V2 extends Variants
 >(
   component: ClassBoundComponent<V, E>,
-  className: ClassValue,
+  className: ClassNamesArgument,
   displayNameOrVariants?: string | V2,
   maybeVariants?: V2
 ) {
@@ -305,7 +304,7 @@ type CreateClassBoundComponentFn = {
    * @returns               React component bound to `className` values
    */
   <V extends Variants = {}, E extends React.ElementType<any> = 'div'>(
-    className: ClassValue,
+    className: ClassNamesArgument,
     variants: V | null,
     elementType?: E
   ): ClassBoundComponent<V, E>;
@@ -315,7 +314,7 @@ type CreateClassBoundComponentFn = {
    * @deprecated
    */
   <V extends Variants = {}, E extends React.ElementType<any> = 'div'>(
-    className: ClassValue,
+    className: ClassNamesArgument,
     variants: V,
     placeholder: null,
     elementType?: E
@@ -360,7 +359,7 @@ type CreateClassBoundComponentForTypeFn<
    * @returns               React component bound to `className` values
    */
   <V extends Variants>(
-    className: ClassValue,
+    className: ClassNamesArgument,
     variants: V | null,
     elementType?: E
   ): ClassBoundComponent<V, E>;
@@ -422,7 +421,7 @@ function makeVariantClassNames<V extends Variants>(
   variants: V,
   props: VariantProps<V>
 ) {
-  const classNames: ClassArray = [];
+  const classNames: ClassNamesArgument[] = [];
   for (const variantName in variants) {
     if (props[variantName]) {
       classNames.push(variants[variantName]);
@@ -459,7 +458,10 @@ function splitProps<P extends VariantProps<V>, V extends Variants>(
   return { componentProps, variantProps };
 }
 
-function mergeClassValues(value1: ClassValue, value2: ClassValue): ClassValue {
+function mergeClassValues(
+  value1: ClassNamesArgument,
+  value2: ClassNamesArgument
+): ClassNamesArgument {
   return value1 && value2 ? [value1, value2] : value1 || value2;
 }
 
@@ -468,7 +470,9 @@ function mergeVariants<V1 extends Variants, V2 extends Variants>(
   v2: V2
 ): V1 & V2 {
   return Object.keys({ ...v1, ...v2 }).reduce((merged, variantName) => {
-    (merged as Record<string, ClassValue>)[variantName] = mergeClassValues(
+    (merged as Record<string, ClassNamesArgument>)[
+      variantName
+    ] = mergeClassValues(
       v1[variantName as keyof V1],
       v2[variantName as keyof V2]
     );
