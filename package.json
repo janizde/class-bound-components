@@ -16,7 +16,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "coverage": "jest --coverage",
     "lint": "eslint src/**/*.tsx"
   },
   "repository": {
