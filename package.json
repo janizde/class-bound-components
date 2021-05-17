@@ -16,7 +16,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc",
-    "coverage": "jest --coverage && cat ./coverage/lcov.info | coveralls",
+    "coverage": "jest --coverage",
     "lint": "eslint src/**/*.tsx"
   },
   "repository": {
@@ -41,7 +41,6 @@
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
     "babel-jest": "^26.6.3",
-    "coveralls": "^3.1.0",
     "eslint": "^7.26.0",
     "eslint-plugin-react": "^7.23.2",
     "jest": "^26.6.3",
